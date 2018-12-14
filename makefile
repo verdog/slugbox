@@ -8,7 +8,7 @@ BINDIR 	= ./bin/
 DEPDIR 	= ./dep/
 DEPFLAGS = -MMD -MP -MF $(DEPDIR)$*.d
 
-CFLAGS = -g -I./inc
+CFLAGS = -g -I./inc -Wall -Wextra
 LFLAGS = -lsfml-graphics -lsfml-window -lsfml-system -lsfml-audio
 
 all: dirs $(OBJ)
@@ -16,7 +16,7 @@ all: dirs $(OBJ)
 
 ./obj/%.o: ./src/%.cpp $(DEPDIR)%.d
 	@echo "Compiling $(basename $(notdir $@))..."
-	$(CXX) $(DEPFLAGS) -c -o $@ $< $(CFLAGS)
+	@$(CXX) $(DEPFLAGS) -c -o $@ $< $(CFLAGS)
 
 dirs:
 	-@ mkdir -p bin dep obj
