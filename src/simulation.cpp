@@ -2,6 +2,8 @@
  * class that contains everything
 */
 
+#include <iostream>
+
 #include "simulation.hpp"
 
 namespace slug {
@@ -13,11 +15,11 @@ namespace slug {
     }
 
     Simulation::~Simulation() {
-        //
+        std::cout << "Simulation::~Simulation()\n";
     }
 
     void Simulation::start() {
-        mBoxes.push_back(slug::Box());
+        mBoxes.push_back(std::unique_ptr<slug::Box>(new Box));
         run();
     }
 
@@ -42,8 +44,8 @@ namespace slug {
 
             // Update
             for (auto &b : mBoxes) {
-                b.update();
-                b.drawContents(mRenderWindow);
+                b->update();
+                b->drawContents(mRenderWindow);
             }
 
             // Update the window

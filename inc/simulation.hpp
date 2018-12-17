@@ -5,6 +5,7 @@
 #pragma once
 
 #include <vector>
+#include <memory>
 
 #include <SFML/Graphics.hpp>
 #include <SFML/Window.hpp>
@@ -29,7 +30,7 @@ namespace slug {
             sf::RenderWindow mRenderWindow;
 
             // boxes
-            std::vector<slug::Box> mBoxes;
+            std::vector<std::unique_ptr<slug::Box>> mBoxes;
     };
 
 } // slug

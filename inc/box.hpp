@@ -5,6 +5,7 @@
 #pragma once
 
 #include <vector>
+#include <memory>
 
 #include "entity.hpp"
 
@@ -19,7 +20,7 @@ namespace slug {
             void update();
             void drawContents(sf::RenderWindow &window);
         private:
-            std::vector<slug::Entity> mEntities;
+            std::vector<std::unique_ptr<slug::Entity>> mEntities;
     };
 
 } // slug

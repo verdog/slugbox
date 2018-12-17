@@ -2,7 +2,10 @@
  * the box that contains the slugs
 */
 
+#include <iostream>
+
 #include "box.hpp"
+#include "slug.hpp"
 
 namespace slug {
 
@@ -11,11 +14,11 @@ namespace slug {
     }
 
     Box::~Box() {
-        //
+        std::cout << "Box::~Box()\n";
     }
 
     void Box::spawn() {
-        //
+        mEntities.push_back(std::unique_ptr<slug::Slug>(new Slug));
     }
 
     void Box::update() {
@@ -24,7 +27,7 @@ namespace slug {
 
     void Box::drawContents(sf::RenderWindow &window) {
         for (auto &e : mEntities) {
-            window.draw(e);
+            window.draw(*e);
         }
     }
 

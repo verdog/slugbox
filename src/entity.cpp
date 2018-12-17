@@ -2,6 +2,8 @@
  * it's what things are
 */
 
+#include <iostream>
+
 #include "entity.hpp"
 
 namespace slug {
@@ -11,7 +13,7 @@ namespace slug {
     }
 
     Entity::~Entity() {
-        //
+        std::cout << "Entity::~Entity()\n";
     }
     
     void Entity::draw(sf::RenderTarget &target, sf::RenderStates states) const {
