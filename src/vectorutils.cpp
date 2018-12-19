@@ -19,6 +19,10 @@ namespace slug {
             return v/magnitude(v);
         }
 
+        int randi(int low, int high) {
+            return std::rand() % (high-low+1) + low;
+        }
+
         float randf(float low, float high) {
             // https://stackoverflow.com/questions/686353/random-float-number-generation
             return low + static_cast <float> (rand())/( static_cast <float> (RAND_MAX/(high-low)));
