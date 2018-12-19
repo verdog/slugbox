@@ -28,17 +28,17 @@ namespace slug {
     }
 
     SlugShape::SlugShape() {
-        radius = 64;
-        wiggleFactor = 10;
-        hairLength = 24;
-        hairWidthAngle = M_PI/64;
+        radius = 128;
+        wiggleFactor = 4;
+        hairLength = 6;
+        hairWidthAngle = M_PI/40;
         points = 17;
 
         convexShape.setPointCount(points*3);
         convexShape.setOutlineColor(sf::Color::Black);
         convexShape.setOutlineThickness(2);
         convexShape.setFillColor(sf::Color::Transparent);
-        convexShape.setPosition(256,256);
+        convexShape.setPosition(512, 256);
     }
 
     SlugShape::~SlugShape() {
@@ -70,7 +70,17 @@ namespace slug {
     }
 
     void SlugShape::draw(sf::RenderTarget &target, sf::RenderStates states) const {
-        target.draw(convexShape);
+        target.draw(convexShape, states);
+
+        sf::Transform transform = convexShape.getTransform();
+        sf::Transform transformInverse = convexShape.getTransform().getInverse();
+
+        // draw second clone if u want
+        transform.scale(.9, .9);
+        transform.combine(transformInverse);
+
+        states.transform = transform;
+        target.draw(convexShape, states);
     }
 
 } // slug
