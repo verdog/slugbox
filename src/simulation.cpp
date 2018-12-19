@@ -20,6 +20,7 @@ namespace slug {
     }
 
     void Simulation::start() {
+        srand(std::time(nullptr));
         mBoxes.push_back(std::unique_ptr<slug::Box>(new Box));
         run();
     }

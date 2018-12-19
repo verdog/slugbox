@@ -11,7 +11,7 @@
 namespace slug {
 
     Slug::Slug() {
-        
+        mLifeTime = sf::Time::Zero;
     }
 
     Slug::~Slug() {
@@ -20,25 +20,32 @@ namespace slug {
 
     void Slug::update(const sf::Time &dTime) {
         mSlugShape.generateShape();
-        mSlugShape.convexShape.rotate(60 * dTime.asSeconds());
+        mSlugShape.outerShape.rotate(-60 * dTime.asSeconds());
+
+        mLifeTime += dTime;
     }
 
     void Slug::draw(sf::RenderTarget &target, sf::RenderStates states) const {
-        target.draw(mSlugShape);
+        target.draw(mSlugShape, states);
     }
 
     SlugShape::SlugShape() {
-        radius = 128;
-        wiggleFactor = 4;
-        hairLength = 6;
-        hairWidthAngle = M_PI/40;
-        points = 17;
+        radius = slug::math::randi(48, 128);
+        innerRatio = slug::math::randf(0.2, 0.95);
+        wiggleFactor = slug::math::randf(0, 8);
+        hairLength = slug::math::randf(0, radius/4);
+        hairWidthAngle = M_PI/slug::math::randi(32, 64);
+        points = slug::math::randi(3, 32);
 
-        convexShape.setPointCount(points*3);
-        convexShape.setOutlineColor(sf::Color::Black);
-        convexShape.setOutlineThickness(2);
-        convexShape.setFillColor(sf::Color::Transparent);
-        convexShape.setPosition(512, 256);
+        outerShape.setPointCount(points*3);
+        innerShape.setPointCount(points*3);
+        outerShape.setOutlineColor(sf::Color::Black);
+        innerShape.setOutlineColor(sf::Color::Black);
+        outerShape.setOutlineThickness(2);
+        innerShape.setOutlineThickness(2);
+        outerShape.setFillColor(sf::Color::Transparent);
+        innerShape.setFillColor(sf::Color::Black);
+        outerShape.setPosition(460, 360);
     }
 
     SlugShape::~SlugShape() {
@@ -63,24 +70,24 @@ namespace slug {
             anchorC += directionC * wiggleFactor/2.0f * slug::math::randf(-1.0, 1.0);
 
             // set point on polygon
-            convexShape.setPoint(i, anchorA);
-            convexShape.setPoint(i+1, anchorB);
-            convexShape.setPoint(i+2, anchorC);
+            outerShape.setPoint(i  , anchorA);
+            outerShape.setPoint(i+1, anchorB);
+            outerShape.setPoint(i+2, anchorC);
+
+            innerShape.setPoint(i  , anchorA * innerRatio);
+            innerShape.setPoint(i+1, anchorB * innerRatio);
+            innerShape.setPoint(i+2, anchorC * innerRatio);
         }
     }
 
     void SlugShape::draw(sf::RenderTarget &target, sf::RenderStates states) const {
-        target.draw(convexShape, states);
+        // draw the outer shell
+        target.draw(outerShape, states);
 
-        sf::Transform transform = convexShape.getTransform();
-        sf::Transform transformInverse = convexShape.getTransform().getInverse();
-
-        // draw second clone if u want
-        transform.scale(.9, .9);
-        transform.combine(transformInverse);
-
-        states.transform = transform;
-        target.draw(convexShape, states);
+        // take transform of outer shape
+        states.transform *= outerShape.getTransform();
+        states.transform *= innerShape.getInverseTransform();
+        target.draw(innerShape, states);
     }
 
 } // slug

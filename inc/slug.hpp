@@ -16,11 +16,13 @@ namespace slug {
         void generateShape();
 
         unsigned int radius;
+        float innerRatio;
         unsigned int points;
         float hairLength;
         float hairWidthAngle;
         float wiggleFactor;
-        sf::ConvexShape convexShape;
+        sf::ConvexShape outerShape;
+        sf::ConvexShape innerShape;
     };
 
     class Slug : public Entity {
@@ -33,6 +35,7 @@ namespace slug {
 
         private:
             SlugShape mSlugShape;
+            sf::Time mLifeTime;
     };
 
 } // slug
