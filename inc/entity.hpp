@@ -13,6 +13,8 @@ namespace slug {
             Entity();
             ~Entity();
             virtual void draw(sf::RenderTarget &target, sf::RenderStates states) const;
+            virtual void handleInput(const sf::Time &dTime);
+            virtual void update(const sf::Time &dTime);
         private:
     };
 

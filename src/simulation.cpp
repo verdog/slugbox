@@ -12,6 +12,7 @@ namespace slug {
     : mResolution(920, 720)
     {
         mRenderWindow.create(sf::VideoMode(mResolution.x, mResolution.y), "slugs");
+        mRenderWindow.setFramerateLimit(60);
     }
 
     Simulation::~Simulation() {
@@ -32,12 +33,20 @@ namespace slug {
                 if (event.type == sf::Event::Closed)
                     stop();
                 
-                // Escape key: exit
+                // Keypress
                 if (event.type == sf::Event::KeyReleased) {
+                    // Escape key: exit
                     if (event.key.code == sf::Keyboard::Escape) {
                         stop();
                     }
+
+                    // "r": restart
+                    if (event.key.code == sf::Keyboard::R) {
+                        mBoxes.pop_back();
+                        mBoxes.push_back(std::unique_ptr<slug::Box>(new Box));
+                    }
                 }
+
             }
             // Clear screen
             mRenderWindow.clear(sf::Color::Magenta);

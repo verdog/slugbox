@@ -22,7 +22,9 @@ namespace slug {
     }
 
     void Box::update() {
-        //
+        for (auto &e : mEntities) {
+            e->update(sf::Time::Zero);
+        }
     }
 
     void Box::drawContents(sf::RenderWindow &window) {

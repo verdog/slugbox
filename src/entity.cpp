@@ -20,4 +20,12 @@ namespace slug {
         // by default, an entity doesn't draw anything
     }
 
+    void Entity::handleInput(const sf::Time &dTime) {
+        // empty
+    }
+
+    void Entity::update(const sf::Time &dTime) {
+        // empty
+    }
+
 } // slug
