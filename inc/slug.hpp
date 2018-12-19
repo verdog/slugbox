@@ -18,9 +18,9 @@ namespace slug {
         unsigned int radius;
         unsigned int points;
         float hairLength;
+        float hairWidthAngle;
         float wiggleFactor;
         sf::ConvexShape convexShape;
-        sf::VertexArray hairShape;
     };
 
     class Slug : public Entity {

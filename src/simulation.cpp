@@ -12,7 +12,7 @@ namespace slug {
     : mResolution(920, 720)
     {
         mRenderWindow.create(sf::VideoMode(mResolution.x, mResolution.y), "slugs");
-        mRenderWindow.setFramerateLimit(60);
+        mRenderWindow.setVerticalSyncEnabled(true);
     }
 
     Simulation::~Simulation() {
@@ -53,7 +53,6 @@ namespace slug {
                         mBoxes.push_back(std::unique_ptr<slug::Box>(new Box));
                     }
                 }
-
             }
             // Clear screen
             mRenderWindow.clear(sf::Color::Magenta);

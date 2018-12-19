@@ -20,7 +20,7 @@ namespace slug {
 
     void Slug::update(const sf::Time &dTime) {
         mSlugShape.generateShape();
-        mSlugShape.convexShape.rotate(120 * dTime.asSeconds());
+        mSlugShape.convexShape.rotate(60 * dTime.asSeconds());
     }
 
     void Slug::draw(sf::RenderTarget &target, sf::RenderStates states) const {
@@ -28,11 +28,13 @@ namespace slug {
     }
 
     SlugShape::SlugShape() {
-        radius = 16;
-        wiggleFactor = 3;
-        hairLength = 6.0;
-        points = 5;
+        radius = 64;
+        wiggleFactor = 10;
+        hairLength = 24;
+        hairWidthAngle = M_PI/64;
+        points = 17;
 
+        convexShape.setPointCount(points*3);
         convexShape.setOutlineColor(sf::Color::Black);
         convexShape.setOutlineThickness(2);
         convexShape.setFillColor(sf::Color::Transparent);
@@ -44,36 +46,31 @@ namespace slug {
     }
 
     void SlugShape::generateShape() {
-        // generate basic polygon
         float angle = 0;
         float angleDelta = 2*M_PI/points;
         
-        convexShape.setPointCount(points);
-        hairShape.setPrimitiveType(sf::PrimitiveType::Lines);
-        hairShape.clear();
-
-        for (int i = 0; i < points; i++, angle += angleDelta) {
-            sf::Vector2f newPoint = sf::Vector2f( radius * std::cos(angle), radius * std::sin(angle) );
-            sf::Vector2f direction = slug::math::normalize(newPoint);
+        for (int i = 0; i < points*3; i+=3, angle += angleDelta) {
+            sf::Vector2f anchorA    = sf::Vector2f((radius+hairLength) * std::cos(angle), (radius+hairLength) * std::sin(angle));
+            sf::Vector2f anchorB    = sf::Vector2f(radius * std::cos(angle+hairWidthAngle), radius * std::sin(angle+hairWidthAngle));
+            sf::Vector2f anchorC    = sf::Vector2f(radius * std::cos(angle+angleDelta-hairWidthAngle), radius * std::sin(angle+angleDelta-hairWidthAngle));
+            sf::Vector2f directionA = slug::math::normalize(anchorA);
+            sf::Vector2f directionB = slug::math::normalize(anchorB);
+            sf::Vector2f directionC = slug::math::normalize(anchorC);
 
             // wiggle
-            newPoint = newPoint + direction * slug::math::randf(-wiggleFactor, wiggleFactor);
+            anchorA += directionA * wiggleFactor * slug::math::randf(-1.0, 1.0);
+            anchorB += directionB * wiggleFactor/2.0f * slug::math::randf(-1.0, 1.0);
+            anchorC += directionC * wiggleFactor/2.0f * slug::math::randf(-1.0, 1.0);
 
             // set point on polygon
-            convexShape.setPoint(i, newPoint);
-            // set hair line
-            sf::Vertex hairVertA = sf::Vertex(newPoint, sf::Color::Black);
-            sf::Vertex hairVertB = sf::Vertex(newPoint + hairLength * slug::math::normalize(newPoint), sf::Color::Black);
-
-            hairShape.append(hairVertA);
-            hairShape.append(hairVertB);
+            convexShape.setPoint(i, anchorA);
+            convexShape.setPoint(i+1, anchorB);
+            convexShape.setPoint(i+2, anchorC);
         }
     }
 
     void SlugShape::draw(sf::RenderTarget &target, sf::RenderStates states) const {
         target.draw(convexShape);
-        states.transform = convexShape.getTransform();
-        target.draw(hairShape, states);
     }
 
 } // slug
