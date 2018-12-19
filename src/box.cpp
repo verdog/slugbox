@@ -21,9 +21,9 @@ namespace slug {
         mEntities.push_back(std::unique_ptr<slug::Slug>(new Slug));
     }
 
-    void Box::update() {
+    void Box::update(const sf::Time &dTime) {
         for (auto &e : mEntities) {
-            e->update(sf::Time::Zero);
+            e->update(dTime);
         }
     }
 

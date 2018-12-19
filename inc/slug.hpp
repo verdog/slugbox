@@ -13,9 +13,10 @@ namespace slug {
         ~SlugShape();
         void draw(sf::RenderTarget &target, sf::RenderStates states) const;
 
-        void generateShape(int points);
+        void generateShape();
 
         unsigned int radius;
+        unsigned int points;
         float hairLength;
         float wiggleFactor;
         sf::ConvexShape convexShape;

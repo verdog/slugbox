@@ -24,8 +24,15 @@ namespace slug {
         run();
     }
 
+    sf::Clock dTimer;
+    sf::Time dTime;
+
     void Simulation::run() {
         while(mRenderWindow.isOpen()) {
+            // start timer
+            dTime = dTimer.getElapsedTime();
+            dTimer.restart();
+
             // Process events
             sf::Event event;
             while (mRenderWindow.pollEvent(event)) {
@@ -53,7 +60,7 @@ namespace slug {
 
             // Update
             for (auto &b : mBoxes) {
-                b->update();
+                b->update(dTime);
                 b->drawContents(mRenderWindow);
             }
 

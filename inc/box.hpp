@@ -17,7 +17,7 @@ namespace slug {
             ~Box();
 
             void spawn();
-            void update();
+            void update(const sf::Time &dTime);
             void drawContents(sf::RenderWindow &window);
         private:
             std::vector<std::unique_ptr<slug::Entity>> mEntities;

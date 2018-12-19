@@ -19,7 +19,8 @@ namespace slug {
     }
 
     void Slug::update(const sf::Time &dTime) {
-        mSlugShape.generateShape(3);
+        mSlugShape.generateShape();
+        mSlugShape.convexShape.rotate(120 * dTime.asSeconds());
     }
 
     void Slug::draw(sf::RenderTarget &target, sf::RenderStates states) const {
@@ -27,10 +28,11 @@ namespace slug {
     }
 
     SlugShape::SlugShape() {
-        radius = 32;
-        wiggleFactor = 2;
+        radius = 16;
+        wiggleFactor = 3;
         hairLength = 6.0;
-        generateShape(3);
+        points = 5;
+
         convexShape.setOutlineColor(sf::Color::Black);
         convexShape.setOutlineThickness(2);
         convexShape.setFillColor(sf::Color::Transparent);
@@ -41,7 +43,7 @@ namespace slug {
         //        
     }
 
-    void SlugShape::generateShape(int points) {
+    void SlugShape::generateShape() {
         // generate basic polygon
         float angle = 0;
         float angleDelta = 2*M_PI/points;
