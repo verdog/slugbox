@@ -42,6 +42,10 @@ namespace slug {
         private:
             SlugShape mSlugShape;
             sf::Time mLifeTime;
+
+            // physics
+            sf::Vector2f mVelocity;
+            float mRotVelocity;
     };
 
 } // slug

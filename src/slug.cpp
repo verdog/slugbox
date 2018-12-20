@@ -12,6 +12,7 @@ namespace slug {
 
     Slug::Slug() {
         mLifeTime = sf::Time::Zero;
+        mRotVelocity = slug::math::randf(-60, 60);
     }
 
     Slug::~Slug() {
@@ -20,7 +21,7 @@ namespace slug {
 
     void Slug::update(const sf::Time &dTime) {
         mSlugShape.generateShape();
-        mSlugShape.outerShape.rotate(-60 * dTime.asSeconds());
+        mSlugShape.outerShape.rotate(mRotVelocity * dTime.asSeconds());
 
         mLifeTime += dTime;
     }
