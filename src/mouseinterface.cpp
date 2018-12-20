@@ -9,10 +9,22 @@ namespace slug {
 
     MouseInterface::MouseInterface(Simulation &sim) 
     : mSim {sim}
-    , mPressedReady {true}
-    , mReleasedReady {false}
+    , mPressedReadyMap {
+        {sf::Mouse::Left, true}
+        , {sf::Mouse::Right, true}
+        , {sf::Mouse::Middle, true}
+        , {sf::Mouse::XButton1, true}
+        , {sf::Mouse::XButton2, true}
+    }
+    , mReleasedReadyMap {
+        {sf::Mouse::Left, false}
+        , {sf::Mouse::Right, false}
+        , {sf::Mouse::Middle, false}
+        , {sf::Mouse::XButton1, false}
+        , {sf::Mouse::XButton2, false}
+    }
     {
-
+        //
     }
 
     MouseInterface::~MouseInterface() {
@@ -28,11 +40,11 @@ namespace slug {
     }
 
     bool MouseInterface::isButtonPressedInstant(sf::Mouse::Button button) {
-        if (isButtonPressed(button) && mPressedReady) {
-            mPressedReady = false;
+        if (isButtonPressed(button) && mPressedReadyMap.at(button)) {
+            mPressedReadyMap.at(button) = false;
             return true;
         } else if (isButtonReleased(button)) {
-            mPressedReady = true;
+            mPressedReadyMap.at(button) = true;
             return false;
         } else {
             return false;
@@ -40,11 +52,11 @@ namespace slug {
     }
 
     bool MouseInterface::isButtonReleasedInstant(sf::Mouse::Button button) {
-        if (isButtonReleased(button) && mReleasedReady) {
-            mReleasedReady = false;
+        if (isButtonReleased(button) && mReleasedReadyMap.at(button)) {
+            mReleasedReadyMap.at(button) = false;
             return true;
         } else if (isButtonPressed(button)) {
-            mReleasedReady = true;
+            mReleasedReadyMap.at(button) = true;
             return false;
         } else {
             return false;

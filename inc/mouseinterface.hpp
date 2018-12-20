@@ -4,6 +4,8 @@
 
 #pragma once
 
+#include <unordered_map>
+
 #include <SFML/Graphics.hpp>
 
 namespace slug {
@@ -23,8 +25,8 @@ namespace slug {
 
         private:
             Simulation &mSim;
-            bool mPressedReady;
-            bool mReleasedReady;
+            std::unordered_map<sf::Mouse::Button, bool> mPressedReadyMap;
+            std::unordered_map<sf::Mouse::Button, bool> mReleasedReadyMap;
     };
 
 }
