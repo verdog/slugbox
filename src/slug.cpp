@@ -29,13 +29,31 @@ namespace slug {
         target.draw(mSlugShape, states);
     }
 
+    void Slug::move(sf::Vector2f vec) {
+        mSlugShape.outerShape.move(vec);
+    }
+
+    void Slug::setPosition(sf::Vector2f vec) {
+        mSlugShape.outerShape.setPosition(vec);
+    }
+
+    void Slug::rotate(float angle) {
+        mSlugShape.outerShape.rotate(angle);
+    }
+
+    void Slug::setRotation(float angle) {
+        mSlugShape.outerShape.setRotation(angle);
+    }
+
+////////////////////////////////////////////////////////////////////////////////
+
     SlugShape::SlugShape() {
-        radius = slug::math::randi(48, 128);
-        innerRatio = slug::math::randf(0.2, 0.95);
-        wiggleFactor = slug::math::randf(0, 8);
+        radius = slug::math::randi(32, 96);
+        innerRatio = slug::math::randf(0.05, 0.95);
+        wiggleFactor = slug::math::randf(0, radius/6);
         hairLength = slug::math::randf(0, radius/4);
-        hairWidthAngle = M_PI/slug::math::randi(32, 64);
-        points = slug::math::randi(3, 32);
+        points = slug::math::randi(3, 13);
+        hairWidthAngle = M_PI/slug::math::randf(points, 32);
 
         outerShape.setPointCount(points*3);
         innerShape.setPointCount(points*3);
@@ -45,7 +63,6 @@ namespace slug {
         innerShape.setOutlineThickness(2);
         outerShape.setFillColor(sf::Color::Transparent);
         innerShape.setFillColor(sf::Color::Black);
-        outerShape.setPosition(460, 360);
     }
 
     SlugShape::~SlugShape() {

@@ -11,11 +11,15 @@
 #include <SFML/Window.hpp>
 #include <SFML/System.hpp>
 
-#include "box.hpp"
+#include "mouseinterface.hpp"
 
 namespace slug {
 
+    class Box;
+
     class Simulation {
+        friend class Box;
+        friend class MouseInterface;
         public:
             Simulation();
             ~Simulation();
@@ -28,6 +32,9 @@ namespace slug {
             // window
             sf::Vector2i mResolution;
             sf::RenderWindow mRenderWindow;
+
+            // interfaces
+            MouseInterface mMouseInterface;
 
             // boxes
             std::vector<std::unique_ptr<slug::Box>> mBoxes;

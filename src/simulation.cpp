@@ -5,11 +5,13 @@
 #include <iostream>
 
 #include "simulation.hpp"
+#include "box.hpp"
 
 namespace slug {
 
     Simulation::Simulation() 
     : mResolution(920, 720)
+    , mMouseInterface(*this)
     {
         mRenderWindow.create(sf::VideoMode(mResolution.x, mResolution.y), "slugs");
         mRenderWindow.setVerticalSyncEnabled(true);
@@ -21,7 +23,7 @@ namespace slug {
 
     void Simulation::start() {
         srand(std::time(nullptr));
-        mBoxes.push_back(std::unique_ptr<slug::Box>(new Box));
+        mBoxes.push_back(std::unique_ptr<slug::Box>(new Box(*this)));
         run();
     }
 
@@ -51,7 +53,7 @@ namespace slug {
                     // "r": restart
                     if (event.key.code == sf::Keyboard::R) {
                         mBoxes.pop_back();
-                        mBoxes.push_back(std::unique_ptr<slug::Box>(new Box));
+                        mBoxes.push_back(std::unique_ptr<slug::Box>(new Box(*this)));
                     }
                 }
             }
@@ -60,6 +62,7 @@ namespace slug {
 
             // Update
             for (auto &b : mBoxes) {
+                b->handleInput();
                 b->update(dTime);
                 b->drawContents(mRenderWindow);
             }

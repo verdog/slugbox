@@ -33,6 +33,12 @@ namespace slug {
             void draw(sf::RenderTarget &target, sf::RenderStates states) const;
             void update(const sf::Time &dTime);
 
+            // transforming
+            void move(sf::Vector2f vec);
+            void setPosition(sf::Vector2f vec);
+            void rotate(float angle);
+            void setRotation(float angle);
+
         private:
             SlugShape mSlugShape;
             sf::Time mLifeTime;

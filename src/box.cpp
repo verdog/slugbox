@@ -4,12 +4,15 @@
 
 #include <iostream>
 
+#include "simulation.hpp"
 #include "box.hpp"
 #include "slug.hpp"
 
 namespace slug {
 
-    Box::Box() {
+    Box::Box(Simulation &sim) 
+    : mSim {sim}
+    {
         spawn();
     }
 
@@ -19,6 +22,15 @@ namespace slug {
 
     void Box::spawn() {
         mEntities.push_back(std::unique_ptr<slug::Slug>(new Slug));
+    }
+
+    void Box::handleInput() {
+        if (mSim.mMouseInterface.isButtonPressedInstant(sf::Mouse::Left)) {
+            // spawn slug
+            auto newSlug = std::unique_ptr<slug::Slug>(new Slug);
+            newSlug->setPosition(mSim.mMouseInterface.getLocalMousePosition());
+            mEntities.push_back(std::move(newSlug));
+        }
     }
 
     void Box::update(const sf::Time &dTime) {

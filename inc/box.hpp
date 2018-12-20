@@ -7,19 +7,22 @@
 #include <vector>
 #include <memory>
 
-#include "entity.hpp"
-
 namespace slug {
+
+    class Simulation;
+    class Entity;
 
     class Box {
         public:
-            Box();
+            Box(Simulation &sim);
             ~Box();
 
             void spawn();
+            void handleInput();
             void update(const sf::Time &dTime);
             void drawContents(sf::RenderWindow &window);
         private:
+            Simulation &mSim;
             std::vector<std::unique_ptr<slug::Entity>> mEntities;
     };
 
