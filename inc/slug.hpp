@@ -34,11 +34,17 @@ namespace slug {
             void draw(sf::RenderTarget &target, sf::RenderStates states) const;
             void update(const sf::Time &dTime);
 
+            DrawableNeuralNet& getBrain();
+
             // transforming
+            const sf::Transform& getTransform();
             void move(sf::Vector2f vec);
             void setPosition(sf::Vector2f vec);
+            sf::Vector2f getPosition();
             void rotate(float angle);
             void setRotation(float angle);
+            sf::FloatRect getGlobalBounds();
+            sf::FloatRect getLocalBounds();
 
         private:
             SlugShape mSlugShape;

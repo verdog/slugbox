@@ -23,7 +23,7 @@ namespace slug {
             void drawContents(sf::RenderWindow &window);
         private:
             Simulation &mSim;
-            std::vector<std::unique_ptr<slug::Entity>> mEntities;
+            std::vector<std::shared_ptr<slug::Entity>> mEntities;
     };
 
 } // slug

@@ -20,6 +20,12 @@ namespace slug {
         std::cout << "Slug::~Slug()\n";
     }
 
+
+    void Slug::draw(sf::RenderTarget &target, sf::RenderStates states) const {
+        target.draw(mSlugShape, states);
+        // target.draw(mBrain, states);
+    }
+    
     void Slug::update(const sf::Time &dTime) {
         mSlugShape.generateShape();
         mSlugShape.outerShape.rotate(mRotVelocity * dTime.asSeconds());
@@ -27,9 +33,12 @@ namespace slug {
         mLifeTime += dTime;
     }
 
-    void Slug::draw(sf::RenderTarget &target, sf::RenderStates states) const {
-        target.draw(mSlugShape, states);
-        target.draw(mBrain, states);
+    DrawableNeuralNet& Slug::getBrain() {
+        return mBrain;
+    }
+
+    const sf::Transform& Slug::getTransform() {
+        return mSlugShape.outerShape.getTransform();
     }
 
     void Slug::move(sf::Vector2f vec) {
@@ -40,12 +49,24 @@ namespace slug {
         mSlugShape.outerShape.setPosition(vec);
     }
 
+    sf::Vector2f Slug::getPosition() {
+        return mSlugShape.outerShape.getPosition();
+    }
+
     void Slug::rotate(float angle) {
         mSlugShape.outerShape.rotate(angle);
     }
 
     void Slug::setRotation(float angle) {
         mSlugShape.outerShape.setRotation(angle);
+    }
+
+    sf::FloatRect Slug::getGlobalBounds() {
+        return mSlugShape.outerShape.getGlobalBounds();
+    }
+
+    sf::FloatRect Slug::getLocalBounds() {
+        return mSlugShape.outerShape.getLocalBounds();
     }
 
     void Slug::initBrain() {

@@ -18,9 +18,6 @@ namespace slug {
     }
 
     void DrawableNeuralNet::draw(sf::RenderTarget &target, sf::RenderStates states) const {
-        sf::Transform transform;
-        transform.translate(320, 320);
-        states.transform = transform;
 
         // draw circles for each node
         std::map<unsigned int, sf::CircleShape> nodeCircles;
@@ -54,14 +51,14 @@ namespace slug {
 
         // add anything in between
         offsetx = offsetx/2;
-        offsety = 0;
+        offsety = -1;
         for (auto const &node : mHiddenNodes) {
             auto newCircle = sf::CircleShape(8, 6);
             newCircle.setOrigin(8, 8);
             newCircle.setOutlineColor(sf::Color::Black);
             newCircle.setOutlineThickness(2);
             newCircle.setFillColor(sf::Color::Transparent);
-            newCircle.move(offsetx, offsety++ * 24);
+            newCircle.move(offsetx, offsety-- * 24);
             nodeCircles[node.nodeID] = newCircle;
         }
 

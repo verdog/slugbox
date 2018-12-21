@@ -135,7 +135,8 @@ namespace slug {
     }
 
     void NeuralNetwork::mutate() {
-        addNodeOnConnection(mConnections.front());
+
+        addNodeOnConnection(mConnections[math::randi(0, mConnections.size() - 1)]);
     }
 
     void NeuralNetwork::fullyConnect() {
