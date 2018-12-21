@@ -68,8 +68,15 @@ namespace slug {
             auto newConnection = sf::VertexArray(sf::Lines, 2);
             newConnection[0].position = nodeCircles[conn.input.nodeID].getPosition();
             newConnection[1].position = nodeCircles[conn.output.nodeID].getPosition();
-            newConnection[0].color = sf::Color::Black;
-            newConnection[1].color = sf::Color::Black;
+
+            float weight = conn.weight;
+            short int r = weight < 0 ? -weight * 255 : 0;
+            short int b = weight > 0 ? weight * 255 : 0;
+
+            sf::Color color = sf::Color(r, 0, b);
+
+            newConnection[0].color = color;
+            newConnection[1].color = color;
             nodeConnections.push_back(newConnection);
         }
 

@@ -131,12 +131,14 @@ namespace slug {
 
         // create two new connections
         mConnections.push_back(Connection(conn.input, newHidden));
+        mConnections.back().weight = conn.weight;
         mConnections.push_back(Connection(newHidden, conn.output));
+        // weight = 1 by default
     }
 
     void NeuralNetwork::mutate() {
 
-        addNodeOnConnection(mConnections[math::randi(0, mConnections.size() - 1)]);
+    addNodeOnConnection(mConnections[math::randi(0, mConnections.size() - 1)]);
     }
 
     void NeuralNetwork::fullyConnect() {

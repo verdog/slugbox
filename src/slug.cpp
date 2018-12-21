@@ -85,7 +85,7 @@ namespace slug {
         mBrain.fullyConnect();
 
         // randomize weights
-        // mBrain.randomizeWeights();
+        mBrain.randomizeWeights();
 
         // test run
         std::vector<float> results = mBrain.run();
