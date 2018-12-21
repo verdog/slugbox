@@ -13,6 +13,7 @@ namespace slug {
     Slug::Slug() {
         mLifeTime = sf::Time::Zero;
         mRotVelocity = slug::math::randf(-60, 60);
+        initBrain();
     }
 
     Slug::~Slug() {
@@ -46,10 +47,39 @@ namespace slug {
         mSlugShape.outerShape.setRotation(angle);
     }
 
+    void Slug::initBrain() {
+        // initialzing brain
+
+        auto myRandf = [](){ return 1; };
+
+        // add inputs
+        mBrain.createInput(myRandf);
+        mBrain.createInput(myRandf);
+
+        // add outputs
+        mBrain.createOutput();
+
+        // connect
+        mBrain.fullyConnect();
+
+        // randomize weights
+        // mBrain.randomizeWeights();
+
+        // test run
+        std::vector<float> results = mBrain.run();
+
+        for (auto f : results) {
+            std::cout << f << " ";
+        }
+        std::cout << "\n";
+
+        std::cout << "initBrain() done.\n";
+    }
+
 ////////////////////////////////////////////////////////////////////////////////
 
     SlugShape::SlugShape() {
-        radius = slug::math::randi(32, 96);
+        radius = slug::math::randi(16, 32);
         innerRatio = slug::math::randf(0.05, 0.95);
         wiggleFactor = slug::math::randf(0, radius/6);
         hairLength = slug::math::randf(0, radius/4);

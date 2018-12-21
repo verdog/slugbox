@@ -5,6 +5,7 @@
 #pragma once
 
 #include "entity.hpp"
+#include "nnet.hpp"
 
 namespace slug {
 
@@ -42,6 +43,9 @@ namespace slug {
         private:
             SlugShape mSlugShape;
             sf::Time mLifeTime;
+
+            void initBrain();
+            NeuralNetwork mBrain;
 
             // physics
             sf::Vector2f mVelocity;
