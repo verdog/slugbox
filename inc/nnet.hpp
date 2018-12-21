@@ -55,18 +55,22 @@ namespace slug {
             NNNode& createInput(std::function<float ()> func);
             NNNode& createOutput();
 
+            void mutate();
             void fullyConnect();
             void randomizeWeights();
 
             std::vector<float> run();
 
-        private:
+        protected:
             std::vector<NNInputNode> mInputNodes;
             std::vector<NNNode> mHiddenNodes;
             std::vector<NNNode> mOutputNodes;
             std::vector<Connection> mConnections;
 
-            float calculateValue(NNNode &node);
+            void addNodeOnConnection(Connection &conn);
+            NNNode& createFloatingHidden();
+
+            float calculateValue(NNNode *node);
 
             bool mDirty;
     };

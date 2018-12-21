@@ -82,13 +82,16 @@ namespace slug {
 ////////////////////////////////////////////////////////////////////////////////
 
     NeuralNetwork::NeuralNetwork() 
-    : mDirty {false}
+    : mDirty {true}
     {
-        
+        // create bias node
+        createInput([](){return 1.0;});
+
+        std::cout << "NNet()\n";
     }
 
     NeuralNetwork::~NeuralNetwork() {
-
+        std::cout << "~NNet()\n";
     }
 
     NNNode& NeuralNetwork::createInput(std::function<float ()> func) {
@@ -109,6 +112,30 @@ namespace slug {
         mDirty = true;
 
         return mOutputNodes.back();
+    }
+
+    NNNode& NeuralNetwork::createFloatingHidden() {
+        mHiddenNodes.push_back(NNNode());
+
+        std::cout << "createFloatingHidden() done.\n";
+
+        return mHiddenNodes.back();
+    }
+
+    void NeuralNetwork::addNodeOnConnection(Connection &conn) {
+        // disable the connection
+        conn.enabled = false;
+
+        // create a node
+        NNNode &newHidden = createFloatingHidden();
+
+        // create two new connections
+        mConnections.push_back(Connection(conn.input, newHidden));
+        mConnections.push_back(Connection(newHidden, conn.output));
+    }
+
+    void NeuralNetwork::mutate() {
+        addNodeOnConnection(mConnections.front());
     }
 
     void NeuralNetwork::fullyConnect() {
@@ -134,14 +161,11 @@ namespace slug {
     }
 
     std::vector<float> NeuralNetwork::run() {
-        // don't run if setup hasn't been completed
-        assert(mDirty == false);
-
         std::vector<float> outputs;
 
         // recursively calculate the value of each output node
         for (auto &outputNode : mOutputNodes) {
-            outputs.push_back(calculateValue(outputNode));
+            outputs.push_back(calculateValue(&outputNode));
         }
 
         std::cout << "run() done.\n";
@@ -149,33 +173,33 @@ namespace slug {
         return outputs;
     }
 
-    float NeuralNetwork::calculateValue(NNNode &node) {
+    float NeuralNetwork::calculateValue(NNNode *node) {
         float sum = 0;
         std::set<NNNode*> dependancies;
 
         // build set of nodes that need to be calculated first
         for (auto &conn : mConnections) {
-            if (conn.output == node && conn.enabled) {
+            if (conn.output == *node && conn.enabled) {
                 dependancies.insert(&conn.input);
             }
         }
 
         // if the set is empty, node is an input node.
         if (dependancies.empty()) {
-            return node.getValue(); // calls input generating function
+            return node->getValue(); // calls input generating function
         } else {
             // sum up the value
             for (auto nodePtr : dependancies) {
-                sum += nodePtr->getValue();
+                sum += calculateValue(nodePtr);
             }
         }
 
         // set my value
-        node.setValue(node.activationFunction(sum));
+        node->setValue(node->activationFunction(sum));
 
-        std::cout << "Set value of node ID " << node.nodeID << " to " << node.getValue() << ".\n";
+        std::cout << "Set value of node ID " << node->nodeID << " to " << node->getValue() << ".\n";
 
-        return node.getValue();
+        return node->getValue();
     }
 
 }

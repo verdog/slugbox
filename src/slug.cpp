@@ -29,6 +29,7 @@ namespace slug {
 
     void Slug::draw(sf::RenderTarget &target, sf::RenderStates states) const {
         target.draw(mSlugShape, states);
+        target.draw(mBrain, states);
     }
 
     void Slug::move(sf::Vector2f vec) {
@@ -67,7 +68,16 @@ namespace slug {
 
         // test run
         std::vector<float> results = mBrain.run();
+        for (auto f : results) {
+            std::cout << f << " ";
+        }
+        std::cout << "\n";
 
+        // mutate once
+        mBrain.mutate();
+
+        // test run
+        results = mBrain.run();
         for (auto f : results) {
             std::cout << f << " ";
         }
