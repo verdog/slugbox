@@ -43,6 +43,8 @@ namespace slug {
             float weight;
             bool enabled;
             const unsigned int innovNum;
+
+            bool operator == (const Connection &b);
         private:
             static unsigned int nextInnovNum;
     };

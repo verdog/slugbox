@@ -31,6 +31,10 @@ namespace slug {
         ;
     }
 
+    bool Connection::operator==(const Connection &b) {
+        return input.nodeID == b.input.nodeID && output.nodeID == b.output.nodeID;
+    }
+
 ////////////////////////////////////////////////////////////////////////////////
 
     unsigned int NNNode::nextNodeID = 0;
@@ -137,25 +141,34 @@ namespace slug {
     }
 
     void NeuralNetwork::createNewRandomConnection() {
+        // pick an input node
         std::vector<NNNode*> inputCandidates;
         std::transform(mInputNodes.begin(), mInputNodes.end(), std::back_inserter(inputCandidates), [](NNNode& n) {return &n;});
         std::transform(mHiddenNodes.begin(), mHiddenNodes.end(), std::back_inserter(inputCandidates), [](NNNode& n) {return &n;});
         NNNode &input = *inputCandidates[math::randi(0, inputCandidates.size()-1)];
 
+        // pick an output node
         std::vector<NNNode*> outputCandidates;
         std::transform(mHiddenNodes.begin(), mHiddenNodes.end(), std::back_inserter(outputCandidates), [](NNNode& n) {return &n;});
         std::transform(mOutputNodes.begin(), mOutputNodes.end(), std::back_inserter(outputCandidates), [](NNNode& n) {return &n;});
 
-        // erase input from list, if it's in there
+        // erase input from list so that no loops are created
         auto inputIter = std::find(outputCandidates.begin(), outputCandidates.end(), &input);
         if (inputIter != outputCandidates.end()) {
             outputCandidates.erase(inputIter);
         }
         NNNode &output = *outputCandidates[math::randi(0, outputCandidates.size()-1)];
 
-        // check for dups here
+        Connection newConnection = Connection(input, output);
+        for (auto const &conn : mConnections) {
+            if (newConnection == conn) {
+                std::cout << "Duplicate connection created: (" << conn.input.nodeID << " -> " << conn.output.nodeID << "). Discarding.\n";
+                return;
+            }
+        }
 
-        mConnections.push_back(Connection(input, output));
+        mConnections.push_back(std::move(newConnection));
+        std::cout << "createNewRandomConnection done. " << newConnection.input.nodeID << " -> " << newConnection.output.nodeID << ".\n";
     }
 
     void NeuralNetwork::mutate() {

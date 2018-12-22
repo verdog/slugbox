@@ -10,18 +10,18 @@ namespace slug {
     MouseInterface::MouseInterface(Simulation &sim) 
     : mSim {sim}
     , mPressedReadyMap {
-        {sf::Mouse::Left, true}
-        , {sf::Mouse::Right, true}
-        , {sf::Mouse::Middle, true}
-        , {sf::Mouse::XButton1, true}
-        , {sf::Mouse::XButton2, true}
+        {sf::Mouse::Left, true},
+        {sf::Mouse::Right, true},
+        {sf::Mouse::Middle, true},
+        {sf::Mouse::XButton1, true},
+        {sf::Mouse::XButton2, true}
     }
     , mReleasedReadyMap {
-        {sf::Mouse::Left, false}
-        , {sf::Mouse::Right, false}
-        , {sf::Mouse::Middle, false}
-        , {sf::Mouse::XButton1, false}
-        , {sf::Mouse::XButton2, false}
+        {sf::Mouse::Left, false},
+        {sf::Mouse::Right, false},
+        {sf::Mouse::Middle, false},
+        {sf::Mouse::XButton1, false},
+        {sf::Mouse::XButton2, false}
     }
     {
         //
