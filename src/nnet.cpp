@@ -136,9 +136,31 @@ namespace slug {
         // weight = 1 by default
     }
 
-    void NeuralNetwork::mutate() {
+    void NeuralNetwork::createNewRandomConnection() {
+        std::vector<NNNode*> inputCandidates;
+        std::transform(mInputNodes.begin(), mInputNodes.end(), std::back_inserter(inputCandidates), [](NNNode& n) {return &n;});
+        std::transform(mHiddenNodes.begin(), mHiddenNodes.end(), std::back_inserter(inputCandidates), [](NNNode& n) {return &n;});
+        NNNode &input = *inputCandidates[math::randi(0, inputCandidates.size()-1)];
 
-    addNodeOnConnection(mConnections[math::randi(0, mConnections.size() - 1)]);
+        std::vector<NNNode*> outputCandidates;
+        std::transform(mHiddenNodes.begin(), mHiddenNodes.end(), std::back_inserter(outputCandidates), [](NNNode& n) {return &n;});
+        std::transform(mOutputNodes.begin(), mOutputNodes.end(), std::back_inserter(outputCandidates), [](NNNode& n) {return &n;});
+
+        // erase input from list, if it's in there
+        auto inputIter = std::find(outputCandidates.begin(), outputCandidates.end(), &input);
+        if (inputIter != outputCandidates.end()) {
+            outputCandidates.erase(inputIter);
+        }
+        NNNode &output = *outputCandidates[math::randi(0, outputCandidates.size()-1)];
+
+        // check for dups here
+
+        mConnections.push_back(Connection(input, output));
+    }
+
+    void NeuralNetwork::mutate() {
+        addNodeOnConnection(mConnections[math::randi(0, mConnections.size() - 1)]);
+        createNewRandomConnection();
     }
 
     void NeuralNetwork::fullyConnect() {

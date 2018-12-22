@@ -77,6 +77,7 @@ namespace slug {
         // add inputs
         mBrain.createInput(myRandf);
         mBrain.createInput(myRandf);
+        mBrain.createInput(myRandf);
 
         // add outputs
         mBrain.createOutput();

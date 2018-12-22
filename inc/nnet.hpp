@@ -69,6 +69,7 @@ namespace slug {
 
             void addNodeOnConnection(Connection &conn);
             NNNode& createFloatingHidden();
+            void createNewRandomConnection();
 
             float calculateValue(NNNode *node);
 
