@@ -111,7 +111,7 @@ namespace slug {
                 *copy = *n;
                 // save id in newNodeMap for later use in reconnecting connections
                 newNodeMap.insert(std::pair<unsigned int, NNNode*>(copy->nodeID, copy.get()));
-                return std::move(copy);
+                return copy;
             }
         );
 
@@ -125,7 +125,7 @@ namespace slug {
                 *copy = *n;
                 // save id in newNodeMap for later use in reconnecting connections
                 newNodeMap.insert(std::pair<unsigned int, NNNode*>(copy->nodeID, copy.get()));
-                return std::move(copy);
+                return copy;
             }
         );
 
@@ -139,7 +139,7 @@ namespace slug {
                 *copy = *n;
                 // save id in newNodeMap for later use in reconnecting connections
                 newNodeMap.insert(std::pair<unsigned int, NNNode*>(copy->nodeID, copy.get()));
-                return std::move(copy);
+                return copy;
             }
         );
 
@@ -157,7 +157,7 @@ namespace slug {
                 copy->input = newNodeMap.at(copy->input->nodeID);
                 copy->output = newNodeMap.at(copy->output->nodeID);
 
-                return std::move(copy);
+                return copy;
             }
         );
     }   
@@ -203,10 +203,9 @@ namespace slug {
 
         // create two new connections
         mConnections.push_back(std::unique_ptr<Connection>(new Connection(*conn.input, newHidden)));
-        mConnections.back()->weight = conn.weight;
-        mConnections.push_back(std::unique_ptr<Connection>(new Connection(newHidden, *conn.output)));
-
         // weight = 1 by default
+        mConnections.push_back(std::unique_ptr<Connection>(new Connection(newHidden, *conn.output)));
+        mConnections.back()->weight = conn.weight;
     }
 
     void NeuralNetwork::createNewRandomConnection() {
@@ -245,7 +244,6 @@ namespace slug {
         addNodeOnConnection(*mConnections[math::randi(0, mConnections.size() - 1)]);
 
         std::cout << "mutate() done.\n";
-
         // createNewRandomConnection();
     }
 
