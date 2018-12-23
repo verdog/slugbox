@@ -23,15 +23,54 @@ namespace slug {
     }
 
     void Box::spawn() {
-        mEntities.push_back(std::shared_ptr<slug::Slug>(new Slug));
+        // create default brain
+        auto stayHigh = [](){return 1.0;};
+
+        mDefaultBrain.createInput(stayHigh);
+        mDefaultBrain.createInput(stayHigh);
+        mDefaultBrain.createInput(stayHigh);
+
+        mDefaultBrain.createOutput();
+
+        mDefaultBrain.fullyConnect();
+
+        mDefaultBrain.mutate();
+        mDefaultBrain.mutate();
+        mDefaultBrain.run();
+
+        auto newSlug = std::unique_ptr<slug::Slug>(new Slug(mDefaultBrain));
+
+        newSlug->setPosition(sf::Vector2f(64, 64));
+
+        mEntities.push_back(std::move(newSlug));
     }
 
     void Box::handleInput() {
         if (mSim.mMouseInterface.isButtonPressedInstant(sf::Mouse::Left)) {
             // spawn slug
-            auto newSlug = std::shared_ptr<slug::Slug>(new Slug);
+            auto newSlug = std::unique_ptr<slug::Slug>(new Slug(mDefaultBrain));
             newSlug->setPosition(mSim.mMouseInterface.getLocalMousePosition());
             mEntities.push_back(std::move(newSlug));
+        }
+
+        // find closest slug
+        float closestMag = 99999.f;
+        mClosestSlug = nullptr;
+        for (auto &e : mEntities) {
+            if (auto slug = dynamic_cast<slug::Slug*>(e.get())) {
+                float dist = slug::math::magnitude(mSim.mMouseInterface.getLocalMousePosition() - slug->getPosition());
+                if (dist < closestMag) {
+                    mClosestSlug = slug;
+                    closestMag = dist;
+                }
+            }
+        }
+
+        if (mSim.mMouseInterface.isButtonPressedInstant(sf::Mouse::Right)) {
+            // mutate the brain
+            if (mClosestSlug != nullptr) {
+                mClosestSlug->getBrain().mutate();
+            }
         }
     }
 
@@ -39,36 +78,23 @@ namespace slug {
         for (auto &e : mEntities) {
             e->update(dTime);
         }
-
-        // find closest slug
-        float closestMag = 99999.f;
-        slug::Slug* closestSlug = nullptr;
-        for (auto &e : mEntities) {
-            if (auto slug = std::dynamic_pointer_cast<slug::Slug>(e)) {
-                float dist = slug::math::magnitude(mSim.mMouseInterface.getLocalMousePosition() - slug->getPosition());
-                if (dist < closestMag) {
-                    closestSlug = slug.get();
-                    closestMag = dist;
-                }
-            }
-        }
-
-        if (closestSlug != nullptr) {
-            sf::RectangleShape bounds = sf::RectangleShape(sf::Vector2f(closestSlug->getLocalBounds().width, closestSlug->getLocalBounds().height));
-            bounds.move(closestSlug->getPosition() - sf::Vector2f(closestSlug->getLocalBounds().width, closestSlug->getLocalBounds().height)/2.f);
-            bounds.setFillColor(sf::Color::Transparent);
-            bounds.setOutlineColor(sf::Color::Black);
-            bounds.setOutlineThickness(2);
-            mSim.mRenderWindow.draw(bounds);
-            sf::Transform t;
-            t.translate(closestSlug->getPosition() + sf::Vector2f(closestSlug->getLocalBounds().width, -closestSlug->getLocalBounds().height/2));
-            mSim.mRenderWindow.draw(closestSlug->getBrain(), t);
-        }
     }
 
     void Box::drawContents(sf::RenderWindow &window) {
         for (auto &e : mEntities) {
             window.draw(*e);
+        }
+
+        if (mClosestSlug != nullptr) {
+            sf::RectangleShape bounds = sf::RectangleShape(sf::Vector2f(mClosestSlug->getLocalBounds().width, mClosestSlug->getLocalBounds().height));
+            bounds.move(mClosestSlug->getPosition() - sf::Vector2f(mClosestSlug->getLocalBounds().width, mClosestSlug->getLocalBounds().height)/2.f);
+            bounds.setFillColor(sf::Color::Transparent);
+            bounds.setOutlineColor(sf::Color::Black);
+            bounds.setOutlineThickness(2);
+            mSim.mRenderWindow.draw(bounds);
+            sf::Transform t;
+            t.translate(mClosestSlug->getPosition() + sf::Vector2f(mClosestSlug->getLocalBounds().width, -mClosestSlug->getLocalBounds().height/2));
+            mSim.mRenderWindow.draw(mClosestSlug->getBrain(), t);
         }
     }
 

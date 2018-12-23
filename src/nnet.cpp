@@ -6,6 +6,7 @@
 #include <cassert>
 #include <cmath>
 #include <set>
+#include <map>
 
 #include "nnet.hpp"
 #include "vectorutils.hpp"
@@ -15,8 +16,8 @@ namespace slug {
     unsigned int Connection::nextInnovNum = 0;   
 
     Connection::Connection(NNNode &in, NNNode &out) 
-    : input {in}
-    , output {out}
+    : input {&in}
+    , output {&out}
     , innovNum {nextInnovNum++}
     {
         weight = 1.0f;
@@ -24,7 +25,7 @@ namespace slug {
 
         std::cout 
             << "Connection(): "
-            << input.nodeID << " -> " << output.nodeID << ", "
+            << input->nodeID << " -> " << output->nodeID << ", "
             << "weight: " << weight << ", "
             << "enabled: " << enabled << ", "
             << "innovNum: " << innovNum << "\n"
@@ -32,7 +33,7 @@ namespace slug {
     }
 
     bool Connection::operator==(const Connection &b) {
-        return input.nodeID == b.input.nodeID && output.nodeID == b.output.nodeID;
+        return input->nodeID == b.input->nodeID && output->nodeID == b.output->nodeID;
     }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -50,6 +51,7 @@ namespace slug {
     }
 
     float NNNode::getValue() {
+        std::cout << "NNNode::getValue() done.\n";
         return mValue;
     }
 
@@ -79,8 +81,8 @@ namespace slug {
     }
 
     float NNInputNode::getValue() {
-        return mInputFunc();
         std::cout << "NNInputNode::getValue() done.\n";
+        return mInputFunc();
     }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -94,36 +96,102 @@ namespace slug {
         std::cout << "NNet()\n";
     }
 
+    NeuralNetwork::NeuralNetwork(const NeuralNetwork& other) {
+        std::cout << "NeuralNetwork(const NeuralNetwork& other)\n";
+
+        std::map<unsigned int, NNNode*> newNodeMap; // for reconstructing connections
+
+        // make clones of input nodes
+        std::transform(
+            other.mInputNodes.begin(),
+            other.mInputNodes.end(),
+            std::back_inserter(mInputNodes),
+            [&newNodeMap](const std::unique_ptr<NNInputNode>&n) {
+                auto copy = std::unique_ptr<NNInputNode>(new NNInputNode(n->mInputFunc));
+                *copy = *n;
+                // save id in newNodeMap for later use in reconnecting connections
+                newNodeMap.insert(std::pair<unsigned int, NNNode*>(copy->nodeID, copy.get()));
+                return std::move(copy);
+            }
+        );
+
+        // make clones of hidden nodes
+        std::transform(
+            other.mHiddenNodes.begin(),
+            other.mHiddenNodes.end(),
+            std::back_inserter(mHiddenNodes),
+            [&newNodeMap](const std::unique_ptr<NNNode> &n) {
+                auto copy = std::unique_ptr<NNNode>(new NNNode());
+                *copy = *n;
+                // save id in newNodeMap for later use in reconnecting connections
+                newNodeMap.insert(std::pair<unsigned int, NNNode*>(copy->nodeID, copy.get()));
+                return std::move(copy);
+            }
+        );
+
+        // make clones of output nodes
+        std::transform(
+            other.mOutputNodes.begin(),
+            other.mOutputNodes.end(),
+            std::back_inserter(mOutputNodes),
+            [&newNodeMap](const std::unique_ptr<NNNode> &n) {
+                auto copy = std::unique_ptr<NNNode>(new NNNode());
+                *copy = *n;
+                // save id in newNodeMap for later use in reconnecting connections
+                newNodeMap.insert(std::pair<unsigned int, NNNode*>(copy->nodeID, copy.get()));
+                return std::move(copy);
+            }
+        );
+
+        // make clones of connections
+        std::transform(
+            other.mConnections.begin(),
+            other.mConnections.end(),
+            std::back_inserter(mConnections),
+            [&newNodeMap](const std::unique_ptr<Connection> &c) {
+                auto copy = std::unique_ptr<Connection>(new Connection(*c->input, *c->output));
+                *copy = *c;
+
+                // at this point the connections in the copy still point to the old object.
+                // let's fix that
+                copy->input = newNodeMap.at(copy->input->nodeID);
+                copy->output = newNodeMap.at(copy->output->nodeID);
+
+                return std::move(copy);
+            }
+        );
+    }   
+
     NeuralNetwork::~NeuralNetwork() {
         std::cout << "~NNet()\n";
     }
 
     NNNode& NeuralNetwork::createInput(std::function<float ()> func) {
-        mInputNodes.push_back(NNInputNode(func));
+        mInputNodes.push_back(std::unique_ptr<NNInputNode>(new NNInputNode(func)));
 
         std::cout << "createInput() done.\n";
 
         mDirty = true;
 
-        return mInputNodes.back();
+        return *mInputNodes.back();
     }
 
     NNNode& NeuralNetwork::createOutput() {
-        mOutputNodes.push_back(NNNode());
+        mOutputNodes.push_back(std::unique_ptr<NNNode>(new NNNode()));
 
         std::cout << "createOutput() done.\n";
 
         mDirty = true;
 
-        return mOutputNodes.back();
+        return *mOutputNodes.back();
     }
 
     NNNode& NeuralNetwork::createFloatingHidden() {
-        mHiddenNodes.push_back(NNNode());
+        mHiddenNodes.push_back(std::unique_ptr<NNNode>(new NNNode()));
 
-        std::cout << "createFloatingHidden() done.\n";
+        std::cout << "createFloatingHidden() done. NodeID: " << mHiddenNodes.back()->nodeID << "\n";
 
-        return mHiddenNodes.back();
+        return *mHiddenNodes.back();
     }
 
     void NeuralNetwork::addNodeOnConnection(Connection &conn) {
@@ -134,23 +202,24 @@ namespace slug {
         NNNode &newHidden = createFloatingHidden();
 
         // create two new connections
-        mConnections.push_back(Connection(conn.input, newHidden));
-        mConnections.back().weight = conn.weight;
-        mConnections.push_back(Connection(newHidden, conn.output));
+        mConnections.push_back(std::unique_ptr<Connection>(new Connection(*conn.input, newHidden)));
+        mConnections.back()->weight = conn.weight;
+        mConnections.push_back(std::unique_ptr<Connection>(new Connection(newHidden, *conn.output)));
+
         // weight = 1 by default
     }
 
     void NeuralNetwork::createNewRandomConnection() {
         // pick an input node
         std::vector<NNNode*> inputCandidates;
-        std::transform(mInputNodes.begin(), mInputNodes.end(), std::back_inserter(inputCandidates), [](NNNode& n) {return &n;});
-        std::transform(mHiddenNodes.begin(), mHiddenNodes.end(), std::back_inserter(inputCandidates), [](NNNode& n) {return &n;});
+        std::transform(mInputNodes.begin(), mInputNodes.end(), std::back_inserter(inputCandidates), [](std::unique_ptr<NNInputNode> &n) {return n.get();});
+        std::transform(mHiddenNodes.begin(), mHiddenNodes.end(), std::back_inserter(inputCandidates), [](std::unique_ptr<NNNode> &n) {return n.get();});
         NNNode &input = *inputCandidates[math::randi(0, inputCandidates.size()-1)];
 
         // pick an output node
         std::vector<NNNode*> outputCandidates;
-        std::transform(mHiddenNodes.begin(), mHiddenNodes.end(), std::back_inserter(outputCandidates), [](NNNode& n) {return &n;});
-        std::transform(mOutputNodes.begin(), mOutputNodes.end(), std::back_inserter(outputCandidates), [](NNNode& n) {return &n;});
+        std::transform(mHiddenNodes.begin(), mHiddenNodes.end(), std::back_inserter(outputCandidates), [](std::unique_ptr<NNNode> &n) {return n.get();});
+        std::transform(mOutputNodes.begin(), mOutputNodes.end(), std::back_inserter(outputCandidates), [](std::unique_ptr<NNNode> &n) {return n.get();});
 
         // erase input from list so that no loops are created
         auto inputIter = std::find(outputCandidates.begin(), outputCandidates.end(), &input);
@@ -159,28 +228,32 @@ namespace slug {
         }
         NNNode &output = *outputCandidates[math::randi(0, outputCandidates.size()-1)];
 
-        Connection newConnection = Connection(input, output);
+        // check if the new connection is a duplicate
         for (auto const &conn : mConnections) {
-            if (newConnection == conn) {
-                std::cout << "Duplicate connection created: (" << conn.input.nodeID << " -> " << conn.output.nodeID << "). Discarding.\n";
+            if (input.nodeID == conn->input->nodeID && output.nodeID == conn->output->nodeID) {
+                std::cout << "Duplicate connection created: (" << conn->input->nodeID << " -> " << conn->output->nodeID << "). Discarding.\n";
                 return;
             }
         }
 
+        auto newConnection = std::unique_ptr<Connection>(new Connection(input, output));
         mConnections.push_back(std::move(newConnection));
-        std::cout << "createNewRandomConnection done. " << newConnection.input.nodeID << " -> " << newConnection.output.nodeID << ".\n";
+        std::cout << "createNewRandomConnection done. " << newConnection->input->nodeID << " -> " << newConnection->output->nodeID << ".\n";
     }
 
     void NeuralNetwork::mutate() {
-        addNodeOnConnection(mConnections[math::randi(0, mConnections.size() - 1)]);
-        createNewRandomConnection();
+        addNodeOnConnection(*mConnections[math::randi(0, mConnections.size() - 1)]);
+
+        std::cout << "mutate() done.\n";
+
+        // createNewRandomConnection();
     }
 
     void NeuralNetwork::fullyConnect() {
         // connect each input to each output
         for (auto &inputNode : mInputNodes) {
             for (auto &outputNode : mOutputNodes) {
-                mConnections.push_back(Connection(inputNode, outputNode));
+                mConnections.push_back(std::unique_ptr<Connection>(new Connection(*inputNode, *outputNode)));
             }
         }
 
@@ -192,7 +265,7 @@ namespace slug {
     void NeuralNetwork::randomizeWeights() {
         // randomize the weight of each connection
         for (auto &connection : mConnections) {
-            connection.weight = math::randf(-1, 1);
+            connection->weight = math::randf(-1, 1);
         }
 
         std::cout << "randomizeWeights() done.\n";
@@ -203,7 +276,7 @@ namespace slug {
 
         // recursively calculate the value of each output node
         for (auto &outputNode : mOutputNodes) {
-            outputs.push_back(calculateValue(&outputNode));
+            outputs.push_back(calculateValue(outputNode.get()));
         }
 
         std::cout << "run() done.\n";
@@ -213,29 +286,34 @@ namespace slug {
 
     float NeuralNetwork::calculateValue(NNNode *node) {
         float sum = 0;
-        std::set<NNNode*> dependancies;
+        std::vector<NNNode*> pendingNodes;
+        std::map<NNNode*, float> pendingWeights;
 
-        // build set of nodes that need to be calculated first
-        for (auto &conn : mConnections) {
-            if (conn.output == *node && conn.enabled) {
-                dependancies.insert(&conn.input);
+        std::cout << "calculating value for node " << node->nodeID << "\n";
+
+        // build vector of nodes that need to be calculated first
+        for (auto const &conn : mConnections) {
+            if (*conn->output == *node && conn->enabled) {
+                pendingNodes.push_back(conn->input);
+                pendingWeights.insert(std::pair<NNNode*, float>(conn->input, conn->weight));
             }
         }
 
-        // if the set is empty, node is an input node.
-        if (dependancies.empty()) {
+        // if the vector is empty, node is an input node.
+        if (pendingNodes.empty()) {
+            std::cout << "input node.\n";
             return node->getValue(); // calls input generating function
         } else {
             // sum up the value
-            for (auto nodePtr : dependancies) {
-                sum += calculateValue(nodePtr);
+            for (auto pendNode : pendingNodes) {
+                sum += pendingWeights.at(pendNode) * calculateValue(pendNode);
             }
         }
 
         // set my value
         node->setValue(node->activationFunction(sum));
 
-        std::cout << "Set value of node ID " << node->nodeID << " to " << node->getValue() << ".\n";
+        // std::cout << "Set value of node ID " << node->nodeID << " to " << node->getValue() << ".\n";
 
         return node->getValue();
     }

@@ -28,7 +28,7 @@ namespace slug {
 
     class Slug : public Entity {
         public:
-            Slug();
+            Slug(const DrawableNeuralNet &brain);
             ~Slug();
 
             void draw(sf::RenderTarget &target, sf::RenderStates states) const;

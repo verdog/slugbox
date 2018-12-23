@@ -1,4 +1,4 @@
-CXX 	= g++
+CXX 	= clang++
 
 SRC 	:= $(wildcard ./src/*.cpp)
 OBJ 	:= $(SRC:./src/%.cpp=./obj/%.o)

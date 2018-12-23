@@ -33,7 +33,7 @@ namespace slug {
             newCircle.setOutlineThickness(2);
             newCircle.setFillColor(sf::Color::Transparent);
             newCircle.move(offsetx, offsety++ * 24);
-            nodeCircles[node.nodeID] = newCircle;
+            nodeCircles[node->nodeID] = newCircle;
         }
 
         // add outputs
@@ -46,7 +46,7 @@ namespace slug {
             newCircle.setOutlineThickness(2);
             newCircle.setFillColor(sf::Color::Transparent);
             newCircle.move(offsetx, offsety++ * 24);
-            nodeCircles[node.nodeID] = newCircle;
+            nodeCircles[node->nodeID] = newCircle;
         }
 
         // add anything in between
@@ -59,17 +59,17 @@ namespace slug {
             newCircle.setOutlineThickness(2);
             newCircle.setFillColor(sf::Color::Transparent);
             newCircle.move(offsetx, offsety-- * 24);
-            nodeCircles[node.nodeID] = newCircle;
+            nodeCircles[node->nodeID] = newCircle;
         }
 
-        // draw connections
+        // calculate connections
         for (auto const &conn : mConnections) {
-            if (conn.enabled == false) continue;
+            if (conn->enabled == false) continue;
             auto newConnection = sf::VertexArray(sf::Lines, 2);
-            newConnection[0].position = nodeCircles[conn.input.nodeID].getPosition();
-            newConnection[1].position = nodeCircles[conn.output.nodeID].getPosition();
+            newConnection[0].position = nodeCircles[conn->input->nodeID].getPosition();
+            newConnection[1].position = nodeCircles[conn->output->nodeID].getPosition();
 
-            float weight = conn.weight;
+            float weight = conn->weight;
             short int r = weight < 0 ? -weight * 255 : 0;
             short int b = weight > 0 ? weight * 255 : 0;
 

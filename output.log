@@ -1,0 +1,241 @@
+createInput() done.
+NNet()
+dNNet()
+createInput() done.
+createInput() done.
+createInput() done.
+createOutput() done.
+Connection(): 0 -> 4, weight: 1, enabled: 1, innovNum: 0
+Connection(): 1 -> 4, weight: 1, enabled: 1, innovNum: 1
+Connection(): 2 -> 4, weight: 1, enabled: 1, innovNum: 2
+Connection(): 3 -> 4, weight: 1, enabled: 1, innovNum: 3
+fullyConnect() done. 
+0 -> 4
+1 -> 4
+2 -> 4
+3 -> 4
+pending for 4...
+examining connection: 0 -> 4
+0 examining connection: 1 -> 4
+1 examining connection: 2 -> 4
+2 examining connection: 3 -> 4
+3 
+0 -> 4
+1 -> 4
+2 -> 4
+3 -> 4
+pending for 0...
+examining connection: 0 -> 4
+examining connection: 1 -> 4
+examining connection: 2 -> 4
+examining connection: 3 -> 4
+
+input node.
+0 -> 4
+1 -> 4
+2 -> 4
+3 -> 4
+pending for 1...
+examining connection: 0 -> 4
+examining connection: 1 -> 4
+examining connection: 2 -> 4
+examining connection: 3 -> 4
+
+input node.
+0 -> 4
+1 -> 4
+2 -> 4
+3 -> 4
+pending for 2...
+examining connection: 0 -> 4
+examining connection: 1 -> 4
+examining connection: 2 -> 4
+examining connection: 3 -> 4
+
+input node.
+0 -> 4
+1 -> 4
+2 -> 4
+3 -> 4
+pending for 3...
+examining connection: 0 -> 4
+examining connection: 1 -> 4
+examining connection: 2 -> 4
+examining connection: 3 -> 4
+
+input node.
+activationFunction(4)
+Set value of node ID 4 to 0.982014.
+run() done.
+createFloatingHidden() done. NodeID: 5
+0 -> 4
+1 -> 4
+2 -> 4
+3 -> 4
+Connection(): 2 -> 5, weight: 1, enabled: 1, innovNum: 4
+Connection(): 5 -> 4, weight: 1, enabled: 1, innovNum: 5
+0 -> 4
+1 -> 4
+2 -> 4
+3 -> 4
+2 -> 5
+5 -> 4
+mutate() done.
+0 -> 4
+1 -> 4
+2 -> 4
+3 -> 4
+2 -> 5
+5 -> 4
+0 -> 4
+1 -> 4
+2 -> 4
+3 -> 4
+2 -> 5
+5 -> 4
+pending for 4...
+examining connection: 0 -> 4
+0 examining connection: 1 -> 4
+1 examining connection: 2 -> 4
+examining connection: 3 -> 4
+3 examining connection: 2 -> 5
+examining connection: 5 -> 4
+5 
+0 -> 4
+1 -> 4
+2 -> 4
+3 -> 4
+2 -> 5
+5 -> 4
+pending for 0...
+examining connection: 0 -> 4
+examining connection: 1 -> 4
+examining connection: 2 -> 4
+examining connection: 3 -> 4
+examining connection: 2 -> 5
+examining connection: 5 -> 4
+
+input node.
+0 -> 4
+1 -> 4
+2 -> 4
+3 -> 4
+2 -> 5
+5 -> 4
+pending for 1...
+examining connection: 0 -> 4
+examining connection: 1 -> 4
+examining connection: 2 -> 4
+examining connection: 3 -> 4
+examining connection: 2 -> 5
+examining connection: 5 -> 4
+
+input node.
+0 -> 4
+1 -> 4
+2 -> 4
+3 -> 4
+2 -> 5
+5 -> 4
+pending for 3...
+examining connection: 0 -> 4
+examining connection: 1 -> 4
+examining connection: 2 -> 4
+examining connection: 3 -> 4
+examining connection: 2 -> 5
+examining connection: 5 -> 4
+
+input node.
+0 -> 4
+1 -> 4
+2 -> 4
+3 -> 4
+2 -> 5
+5 -> 4
+pending for 5...
+examining connection: 0 -> 4
+examining connection: 1 -> 4
+examining connection: 2 -> 4
+examining connection: 3 -> 4
+examining connection: 2 -> 5
+2 examining connection: 5 -> 4
+
+0 -> 4
+1 -> 4
+2 -> 4
+3 -> 4
+2 -> 5
+5 -> 4
+pending for 2...
+examining connection: 0 -> 4
+examining connection: 1 -> 4
+examining connection: 2 -> 4
+examining connection: 3 -> 4
+examining connection: 2 -> 5
+examining connection: 5 -> 4
+
+input node.
+activationFunction(1)
+Set value of node ID 5 to 0.731059.
+activationFunction(3.73106)
+Set value of node ID 4 to 0.976593.
+run() done.
+createFloatingHidden() done. NodeID: 6
+0 -> 4
+1 -> 4
+2 -> 4
+3 -> 4
+2 -> 5
+5 -> 4
+Connection(): 5 -> 6, weight: 1, enabled: 1, innovNum: 6
+Connection(): 6 -> 4, weight: 1, enabled: 1, innovNum: 7
+0 -> 4
+1 -> 4
+2 -> 4
+3 -> 4
+2 -> 5
+5 -> 4
+5 -> 6
+6 -> 4
+mutate() done.
+0 -> 4
+1 -> 4
+2 -> 4
+3 -> 4
+2 -> 5
+5 -> 4
+5 -> 6
+6 -> 4
+0 -> 4
+1 -> 4
+2 -> 4
+3 -> 4
+2 -> 5
+5 -> 4
+5 -> 6
+6 -> 4
+pending for 4...
+examining connection: 0 -> 4
+0 examining connection: 1 -> 4
+1 examining connection: 2 -> 4
+examining connection: 3 -> 4
+3 examining connection: 2 -> 1065353216
+examining connection: 1065353216 -> 4
+examining connection: 1065353216 -> 6
+examining connection: 6 -> 4
+6 
+0 -> 4
+1 -> 4
+2 -> 4
+3 -> 4
+2 -> 1065353216
+1065353216 -> 4
+1065353216 -> 6
+6 -> 4
+pending for 0...
+examining connection: 0 -> 4
+examining connection: 1 -> 4
+examining connection: 2 -> 4
+examining connection: 3 -> 4
+examining connection: 2 -> 1065353216
+e

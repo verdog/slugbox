@@ -3,3 +3,4 @@ dep/
 obj/
 .vscode/
 media/
+.gdbinit

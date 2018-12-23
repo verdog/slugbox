@@ -7,10 +7,13 @@
 #include <vector>
 #include <memory>
 
+#include "drawablennet.hpp"
+
 namespace slug {
 
     class Simulation;
     class Entity;
+    class Slug;
 
     class Box {
         public:
@@ -23,7 +26,9 @@ namespace slug {
             void drawContents(sf::RenderWindow &window);
         private:
             Simulation &mSim;
-            std::vector<std::shared_ptr<slug::Entity>> mEntities;
+            std::vector<std::unique_ptr<slug::Entity>> mEntities;
+            DrawableNeuralNet mDefaultBrain;
+            Slug *mClosestSlug;
     };
 
 } // slug

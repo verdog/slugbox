@@ -10,7 +10,9 @@
 
 namespace slug {
 
-    Slug::Slug() {
+    Slug::Slug(const DrawableNeuralNet &brain) 
+    : mBrain {brain}
+    {
         mLifeTime = sf::Time::Zero;
         mRotVelocity = slug::math::randf(-60, 60);
         initBrain();
@@ -70,36 +72,11 @@ namespace slug {
     }
 
     void Slug::initBrain() {
-        // initialzing brain
-
-        auto myRandf = [](){ return 1; };
-
-        // add inputs
-        mBrain.createInput(myRandf);
-        mBrain.createInput(myRandf);
-        mBrain.createInput(myRandf);
-
-        // add outputs
-        mBrain.createOutput();
-
-        // connect
-        mBrain.fullyConnect();
-
         // randomize weights
         mBrain.randomizeWeights();
 
         // test run
         std::vector<float> results = mBrain.run();
-        for (auto f : results) {
-            std::cout << f << " ";
-        }
-        std::cout << "\n";
-
-        // mutate once
-        mBrain.mutate();
-
-        // test run
-        results = mBrain.run();
         for (auto f : results) {
             std::cout << f << " ";
         }

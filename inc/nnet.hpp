@@ -14,19 +14,20 @@ namespace slug {
         public:
             NNNode();
             ~NNNode();
-            const unsigned int nodeID;
+            unsigned int nodeID;
+            virtual float getValue();
             float activationFunction(float input);
 
-            virtual float getValue();
             void setValue(float value);
 
-            bool operator == (const NNNode& b);
+            bool operator == (const NNNode &b);
         private:
             float mValue;
             static unsigned int nextNodeID;
     };
 
     class NNInputNode : public NNNode {
+        friend class NeuralNetwork;
         public:
             NNInputNode(std::function<float ()> inputFunc);
             ~NNInputNode();
@@ -38,11 +39,11 @@ namespace slug {
     class Connection {
         public:
             Connection(NNNode &in, NNNode &out);
-            NNNode &input;
-            NNNode &output;
+            NNNode *input;
+            NNNode *output;
             float weight;
             bool enabled;
-            const unsigned int innovNum;
+            unsigned int innovNum;
 
             bool operator == (const Connection &b);
         private:
@@ -52,6 +53,7 @@ namespace slug {
     class NeuralNetwork {
         public:
             NeuralNetwork();
+            NeuralNetwork(const NeuralNetwork& other);
             ~NeuralNetwork();
 
             NNNode& createInput(std::function<float ()> func);
@@ -64,10 +66,10 @@ namespace slug {
             std::vector<float> run();
 
         protected:
-            std::vector<NNInputNode> mInputNodes;
-            std::vector<NNNode> mHiddenNodes;
-            std::vector<NNNode> mOutputNodes;
-            std::vector<Connection> mConnections;
+            std::vector<std::unique_ptr<NNInputNode>> mInputNodes;
+            std::vector<std::unique_ptr<NNNode>> mHiddenNodes;
+            std::vector<std::unique_ptr<NNNode>> mOutputNodes;
+            std::vector<std::unique_ptr<Connection>> mConnections;
 
             void addNodeOnConnection(Connection &conn);
             NNNode& createFloatingHidden();
