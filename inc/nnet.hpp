@@ -21,6 +21,7 @@ namespace slug {
             void setValue(float value);
 
             bool operator == (const NNNode &b);
+            bool seen;
         private:
             float mValue;
             static unsigned int nextNodeID;
@@ -59,9 +60,13 @@ namespace slug {
             NNNode& createInput(std::function<float ()> func);
             NNNode& createOutput();
 
-            void mutate();
             void fullyConnect();
             void randomizeWeights();
+            
+            void addNodeOnConnection(Connection &conn);
+            void addNodeOnRandomConnection();
+            void createNewRandomConnection();
+            void mutate();
 
             std::vector<float> run();
 
@@ -71,9 +76,7 @@ namespace slug {
             std::vector<std::unique_ptr<NNNode>> mOutputNodes;
             std::vector<std::unique_ptr<Connection>> mConnections;
 
-            void addNodeOnConnection(Connection &conn);
             NNNode& createFloatingHidden();
-            void createNewRandomConnection();
 
             float calculateValue(NNNode *node);
 

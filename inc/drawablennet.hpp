@@ -16,6 +16,8 @@ namespace slug {
             ~DrawableNeuralNet();
 
             void draw(sf::RenderTarget &target, sf::RenderStates states) const;
+
+            sf::Font mFont;
         private:
     };
 

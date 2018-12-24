@@ -42,6 +42,7 @@ namespace slug {
 
     NNNode::NNNode() 
     : nodeID {nextNodeID++}
+    , seen {false}
     {
 
     }
@@ -208,6 +209,10 @@ namespace slug {
         mConnections.back()->weight = conn.weight;
     }
 
+    void NeuralNetwork::addNodeOnRandomConnection() {
+        addNodeOnConnection(*mConnections[slug::math::randi(0, mConnections.size() - 1)]);
+    }
+
     void NeuralNetwork::createNewRandomConnection() {
         // pick an input node
         std::vector<NNNode*> inputCandidates;
@@ -221,10 +226,10 @@ namespace slug {
         std::transform(mOutputNodes.begin(), mOutputNodes.end(), std::back_inserter(outputCandidates), [](std::unique_ptr<NNNode> &n) {return n.get();});
 
         // erase input from list so that no loops are created
-        auto inputIter = std::find(outputCandidates.begin(), outputCandidates.end(), &input);
-        if (inputIter != outputCandidates.end()) {
-            outputCandidates.erase(inputIter);
-        }
+        // auto inputIter = std::find(outputCandidates.begin(), outputCandidates.end(), &input);
+        // if (inputIter != outputCandidates.end()) {
+        //     outputCandidates.erase(inputIter);
+        // }
         NNNode &output = *outputCandidates[math::randi(0, outputCandidates.size()-1)];
 
         // check if the new connection is a duplicate
@@ -236,15 +241,22 @@ namespace slug {
         }
 
         auto newConnection = std::unique_ptr<Connection>(new Connection(input, output));
-        mConnections.push_back(std::move(newConnection));
         std::cout << "createNewRandomConnection done. " << newConnection->input->nodeID << " -> " << newConnection->output->nodeID << ".\n";
+        mConnections.push_back(std::move(newConnection));
     }
 
     void NeuralNetwork::mutate() {
-        addNodeOnConnection(*mConnections[math::randi(0, mConnections.size() - 1)]);
+        // addNodeOnConnection(*mConnections[math::randi(0, mConnections.size() - 1)]);
+        createNewRandomConnection();
+
+        // test run
+        std::vector<float> results = run();
+        for (auto f : results) {
+            std::cout << f << " ";
+        }
+        std::cout << "\n";
 
         std::cout << "mutate() done.\n";
-        // createNewRandomConnection();
     }
 
     void NeuralNetwork::fullyConnect() {
@@ -272,6 +284,17 @@ namespace slug {
     std::vector<float> NeuralNetwork::run() {
         std::vector<float> outputs;
 
+        // mark all nodes as unseen
+        for (auto &node : mInputNodes) {
+            node->seen = false;
+        }
+        for (auto &node : mHiddenNodes) {
+            node->seen = false;
+        }
+        for (auto &node : mOutputNodes) {
+            node->seen = false;
+        }
+
         // recursively calculate the value of each output node
         for (auto &outputNode : mOutputNodes) {
             outputs.push_back(calculateValue(outputNode.get()));
@@ -288,6 +311,14 @@ namespace slug {
         std::map<NNNode*, float> pendingWeights;
 
         std::cout << "calculating value for node " << node->nodeID << "\n";
+
+        if (node->seen) {
+            // we've already been here, just return the current value
+            return node->getValue();
+        }
+
+        // mark node as seen
+        node->seen = true;
 
         // build vector of nodes that need to be calculated first
         for (auto const &conn : mConnections) {

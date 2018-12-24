@@ -11,6 +11,9 @@ namespace slug {
 
     DrawableNeuralNet::DrawableNeuralNet() {
         std::cout << "dNNet()\n";
+        if (!mFont.loadFromFile("./resources/fonts/NotoMono-Regular.ttf")) {
+            std::cerr << "DrawableNeuralNet failed to load font!\n";
+        }
     }
 
     DrawableNeuralNet::~DrawableNeuralNet() {
@@ -22,6 +25,7 @@ namespace slug {
         // draw circles for each node
         std::map<unsigned int, sf::CircleShape> nodeCircles;
         std::vector<sf::VertexArray> nodeConnections;
+        std::vector<sf::Text> labels;
         
         // add inputs
         int offsetx = 0;
@@ -34,6 +38,11 @@ namespace slug {
             newCircle.setFillColor(sf::Color::Transparent);
             newCircle.move(offsetx, offsety++ * 24);
             nodeCircles[node->nodeID] = newCircle;
+
+            // push back label
+            labels.push_back(sf::Text(std::to_string(node->nodeID), mFont, 16));
+            labels.back().setFillColor(sf::Color::Black);
+            labels.back().setPosition(newCircle.getPosition());
         }
 
         // add outputs
@@ -47,6 +56,11 @@ namespace slug {
             newCircle.setFillColor(sf::Color::Transparent);
             newCircle.move(offsetx, offsety++ * 24);
             nodeCircles[node->nodeID] = newCircle;
+
+            // push back label
+            labels.push_back(sf::Text(std::to_string(node->nodeID), mFont, 16));
+            labels.back().setFillColor(sf::Color::Black);
+            labels.back().setPosition(newCircle.getPosition());
         }
 
         // add anything in between
@@ -60,6 +74,11 @@ namespace slug {
             newCircle.setFillColor(sf::Color::Transparent);
             newCircle.move(offsetx, offsety-- * 24);
             nodeCircles[node->nodeID] = newCircle;
+
+            // push back label
+            labels.push_back(sf::Text(std::to_string(node->nodeID), mFont, 16));
+            labels.back().setFillColor(sf::Color::Black);
+            labels.back().setPosition(newCircle.getPosition());
         }
 
         // calculate connections
@@ -87,6 +106,10 @@ namespace slug {
 
         for (auto const &line : nodeConnections) {
             target.draw(line, states);
+        }
+
+        for (auto const &label : labels) {
+            target.draw(label, states);
         }
     }
 

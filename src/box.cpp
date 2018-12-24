@@ -34,13 +34,13 @@ namespace slug {
 
         mDefaultBrain.fullyConnect();
 
-        mDefaultBrain.mutate();
-        mDefaultBrain.mutate();
-        mDefaultBrain.run();
+        mDefaultBrain.addNodeOnRandomConnection();
+        mDefaultBrain.addNodeOnRandomConnection();
+        mDefaultBrain.addNodeOnRandomConnection();
 
         auto newSlug = std::unique_ptr<slug::Slug>(new Slug(mDefaultBrain));
 
-        newSlug->setPosition(sf::Vector2f(64, 64));
+        newSlug->setPosition(sf::Vector2f(128, 128));
 
         mEntities.push_back(std::move(newSlug));
     }
