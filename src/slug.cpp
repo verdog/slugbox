@@ -71,6 +71,10 @@ namespace slug {
         return mSlugShape.outerShape.getLocalBounds();
     }
 
+    float Slug::getRadius() {
+        return mSlugShape.radius;
+    }
+
     void Slug::initBrain() {
         // randomize weights
         mBrain.randomizeWeights();

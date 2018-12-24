@@ -43,6 +43,7 @@ namespace slug {
     NNNode::NNNode() 
     : nodeID {nextNodeID++}
     , seen {false}
+    , mValue {0.0f}
     {
 
     }
@@ -225,11 +226,6 @@ namespace slug {
         std::transform(mHiddenNodes.begin(), mHiddenNodes.end(), std::back_inserter(outputCandidates), [](std::unique_ptr<NNNode> &n) {return n.get();});
         std::transform(mOutputNodes.begin(), mOutputNodes.end(), std::back_inserter(outputCandidates), [](std::unique_ptr<NNNode> &n) {return n.get();});
 
-        // erase input from list so that no loops are created
-        // auto inputIter = std::find(outputCandidates.begin(), outputCandidates.end(), &input);
-        // if (inputIter != outputCandidates.end()) {
-        //     outputCandidates.erase(inputIter);
-        // }
         NNNode &output = *outputCandidates[math::randi(0, outputCandidates.size()-1)];
 
         // check if the new connection is a duplicate

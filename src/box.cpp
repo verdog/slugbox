@@ -93,7 +93,7 @@ namespace slug {
             bounds.setOutlineThickness(2);
             mSim.mRenderWindow.draw(bounds);
             sf::Transform t;
-            t.translate(mClosestSlug->getPosition() + sf::Vector2f(mClosestSlug->getLocalBounds().width, -mClosestSlug->getLocalBounds().height/2));
+            t.translate(mClosestSlug->getPosition() + sf::Vector2f(mClosestSlug->getRadius()*2, -mClosestSlug->getRadius()));
             mSim.mRenderWindow.draw(mClosestSlug->getBrain(), t);
         }
     }
