@@ -40,7 +40,7 @@ namespace slug {
             nodeCircles[node->nodeID] = newCircle;
 
             // push back label
-            labels.push_back(sf::Text(std::to_string(node->nodeID), mFont, 16));
+            labels.push_back(sf::Text(std::to_string(node->nodeID) + ": " + std::to_string(node->getValue()), mFont, 16));
             labels.back().setFillColor(sf::Color::Black);
             labels.back().setPosition(newCircle.getPosition());
         }
@@ -58,7 +58,7 @@ namespace slug {
             nodeCircles[node->nodeID] = newCircle;
 
             // push back label
-            labels.push_back(sf::Text(std::to_string(node->nodeID), mFont, 16));
+            labels.push_back(sf::Text(std::to_string(node->nodeID) + ": " + std::to_string(node->getValue()), mFont, 16));
             labels.back().setFillColor(sf::Color::Black);
             labels.back().setPosition(newCircle.getPosition());
         }
@@ -76,7 +76,7 @@ namespace slug {
             nodeCircles[node->nodeID] = newCircle;
 
             // push back label
-            labels.push_back(sf::Text(std::to_string(node->nodeID), mFont, 16));
+            labels.push_back(sf::Text(std::to_string(node->nodeID) + ": " + std::to_string(node->getValue()), mFont, 16));
             labels.back().setFillColor(sf::Color::Black);
             labels.back().setPosition(newCircle.getPosition());
         }

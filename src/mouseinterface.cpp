@@ -32,32 +32,48 @@ namespace slug {
     }
 
     bool MouseInterface::isButtonPressed(sf::Mouse::Button button) {
-        return sf::Mouse::isButtonPressed(button);
+        if (mSim.mWindowHasFocus) {
+            return sf::Mouse::isButtonPressed(button);
+        } else {
+            return false;
+        }
     }
 
     bool MouseInterface::isButtonReleased(sf::Mouse::Button button) {
-        return !isButtonPressed(button);
+        if (mSim.mWindowHasFocus) {
+            return !isButtonPressed(button);
+        } else {
+            return false;
+        }
     }
 
     bool MouseInterface::isButtonPressedInstant(sf::Mouse::Button button) {
-        if (isButtonPressed(button) && mPressedReadyMap.at(button)) {
-            mPressedReadyMap.at(button) = false;
-            return true;
-        } else if (isButtonReleased(button)) {
-            mPressedReadyMap.at(button) = true;
-            return false;
+        if (mSim.mWindowHasFocus) {
+            if (isButtonPressed(button) && mPressedReadyMap.at(button)) {
+                mPressedReadyMap.at(button) = false;
+                return true;
+            } else if (isButtonReleased(button)) {
+                mPressedReadyMap.at(button) = true;
+                return false;
+            } else {
+                return false;
+            }
         } else {
             return false;
         }
     }
 
     bool MouseInterface::isButtonReleasedInstant(sf::Mouse::Button button) {
-        if (isButtonReleased(button) && mReleasedReadyMap.at(button)) {
-            mReleasedReadyMap.at(button) = false;
-            return true;
-        } else if (isButtonPressed(button)) {
-            mReleasedReadyMap.at(button) = true;
-            return false;
+        if (mSim.mWindowHasFocus) {
+            if (isButtonReleased(button) && mReleasedReadyMap.at(button)) {
+                mReleasedReadyMap.at(button) = false;
+                return true;
+            } else if (isButtonPressed(button)) {
+                mReleasedReadyMap.at(button) = true;
+                return false;
+            } else {
+                return false;
+            }
         } else {
             return false;
         }

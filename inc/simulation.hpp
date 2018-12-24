@@ -32,6 +32,7 @@ namespace slug {
             // window
             sf::Vector2i mResolution;
             sf::RenderWindow mRenderWindow;
+            bool mWindowHasFocus;
 
             // interfaces
             MouseInterface mMouseInterface;

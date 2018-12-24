@@ -45,7 +45,7 @@ namespace slug {
             void setRotation(float angle);
             sf::FloatRect getGlobalBounds();
             sf::FloatRect getLocalBounds();
-            float getRadius();
+            float getRadius() const;
 
         private:
             SlugShape mSlugShape;

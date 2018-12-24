@@ -25,12 +25,14 @@ namespace slug {
 
     void Slug::draw(sf::RenderTarget &target, sf::RenderStates states) const {
         target.draw(mSlugShape, states);
-        // target.draw(mBrain, states);
+        states.transform = sf::Transform().translate(mSlugShape.outerShape.getPosition() + sf::Vector2f(getRadius()*1.75, -getRadius()));
+        target.draw(mBrain, states);
     }
     
     void Slug::update(const sf::Time &dTime) {
         mSlugShape.generateShape();
         mSlugShape.outerShape.rotate(mRotVelocity * dTime.asSeconds());
+        mBrain.run();
 
         mLifeTime += dTime;
     }
@@ -71,7 +73,7 @@ namespace slug {
         return mSlugShape.outerShape.getLocalBounds();
     }
 
-    float Slug::getRadius() {
+    float Slug::getRadius() const {
         return mSlugShape.radius;
     }
 

@@ -27,5 +27,9 @@ namespace slug {
             // https://stackoverflow.com/questions/686353/random-float-number-generation
             return low + static_cast <float> (rand())/( static_cast <float> (RAND_MAX/(high-low)));
         }
+
+        float sigmoid(float x) {
+            return 1 / (1 + std::exp(-x));
+        }
     }
 }

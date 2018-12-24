@@ -24,11 +24,11 @@ namespace slug {
 
     void Box::spawn() {
         // create default brain
-        auto stayHigh = [](){return 1.0;};
+        auto mouseX = [this](){return math::sigmoid(4*(mSim.mMouseInterface.getLocalMousePosition().x/mSim.mResolution.x - 0.5f));};
+        auto mouseY = [this](){return math::sigmoid(4*(mSim.mMouseInterface.getLocalMousePosition().y/mSim.mResolution.y - 0.5f));};
 
-        mDefaultBrain.createInput(stayHigh);
-        mDefaultBrain.createInput(stayHigh);
-        mDefaultBrain.createInput(stayHigh);
+        mDefaultBrain.createInput(mouseX);
+        mDefaultBrain.createInput(mouseY);
 
         mDefaultBrain.createOutput();
 
@@ -94,7 +94,7 @@ namespace slug {
             mSim.mRenderWindow.draw(bounds);
             sf::Transform t;
             t.translate(mClosestSlug->getPosition() + sf::Vector2f(mClosestSlug->getRadius()*2, -mClosestSlug->getRadius()));
-            mSim.mRenderWindow.draw(mClosestSlug->getBrain(), t);
+            // mSim.mRenderWindow.draw(mClosestSlug->getBrain(), t);
         }
     }
 

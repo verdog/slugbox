@@ -14,5 +14,8 @@ namespace slug {
         // random
         int randi(int low, int high);
         float randf(float low, float high);
+
+        // activation
+        float sigmoid(float x);
     }
 }

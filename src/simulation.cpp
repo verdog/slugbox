@@ -42,6 +42,10 @@ namespace slug {
                 // Close window: exit
                 if (event.type == sf::Event::Closed)
                     stop();
+
+                // keep track of window focus
+                if (event.type == sf::Event::GainedFocus) mWindowHasFocus = true;
+                if (event.type == sf::Event::LostFocus) mWindowHasFocus = false;
                 
                 // Keypress
                 if (event.type == sf::Event::KeyReleased) {

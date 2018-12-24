@@ -23,13 +23,13 @@ namespace slug {
         weight = 1.0f;
         enabled = true;
 
-        std::cout 
-            << "Connection(): "
-            << input->nodeID << " -> " << output->nodeID << ", "
-            << "weight: " << weight << ", "
-            << "enabled: " << enabled << ", "
-            << "innovNum: " << innovNum << "\n"
-        ;
+        // std::cout 
+        //     << "Connection(): "
+        //     << input->nodeID << " -> " << output->nodeID << ", "
+        //     << "weight: " << weight << ", "
+        //     << "enabled: " << enabled << ", "
+        //     << "innovNum: " << innovNum << "\n"
+        // ;
     }
 
     bool Connection::operator==(const Connection &b) {
@@ -53,7 +53,6 @@ namespace slug {
     }
 
     float NNNode::getValue() {
-        std::cout << "NNNode::getValue() done.\n";
         return mValue;
     }
 
@@ -62,7 +61,6 @@ namespace slug {
     }
 
     float NNNode::activationFunction(float input) {
-        std::cout << "activationFunction(" << input << ")\n";
         return 1 / (1 + std::exp(-input));
     }
 
@@ -83,7 +81,6 @@ namespace slug {
     }
 
     float NNInputNode::getValue() {
-        std::cout << "NNInputNode::getValue() done.\n";
         return mInputFunc();
     }
 
@@ -94,13 +91,9 @@ namespace slug {
     {
         // create bias node
         createInput([](){return 1.0;});
-
-        std::cout << "NNet()\n";
     }
 
     NeuralNetwork::NeuralNetwork(const NeuralNetwork& other) {
-        std::cout << "NeuralNetwork(const NeuralNetwork& other)\n";
-
         std::map<unsigned int, NNNode*> newNodeMap; // for reconstructing connections
 
         // make clones of input nodes
@@ -165,34 +158,20 @@ namespace slug {
     }   
 
     NeuralNetwork::~NeuralNetwork() {
-        std::cout << "~NNet()\n";
     }
 
     NNNode& NeuralNetwork::createInput(std::function<float ()> func) {
         mInputNodes.push_back(std::unique_ptr<NNInputNode>(new NNInputNode(func)));
-
-        std::cout << "createInput() done.\n";
-
-        mDirty = true;
-
         return *mInputNodes.back();
     }
 
     NNNode& NeuralNetwork::createOutput() {
         mOutputNodes.push_back(std::unique_ptr<NNNode>(new NNNode()));
-
-        std::cout << "createOutput() done.\n";
-
-        mDirty = true;
-
         return *mOutputNodes.back();
     }
 
     NNNode& NeuralNetwork::createFloatingHidden() {
         mHiddenNodes.push_back(std::unique_ptr<NNNode>(new NNNode()));
-
-        std::cout << "createFloatingHidden() done. NodeID: " << mHiddenNodes.back()->nodeID << "\n";
-
         return *mHiddenNodes.back();
     }
 
@@ -296,8 +275,6 @@ namespace slug {
             outputs.push_back(calculateValue(outputNode.get()));
         }
 
-        std::cout << "run() done.\n";
-
         return outputs;
     }
 
@@ -305,8 +282,6 @@ namespace slug {
         float sum = 0;
         std::vector<NNNode*> pendingNodes;
         std::map<NNNode*, float> pendingWeights;
-
-        std::cout << "calculating value for node " << node->nodeID << "\n";
 
         if (node->seen) {
             // we've already been here, just return the current value
@@ -326,7 +301,6 @@ namespace slug {
 
         // if the vector is empty, node is an input node.
         if (pendingNodes.empty()) {
-            std::cout << "input node.\n";
             return node->getValue(); // calls input generating function
         } else {
             // sum up the value
