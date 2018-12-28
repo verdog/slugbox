@@ -22,7 +22,6 @@ namespace slug {
         std::cout << "Slug::~Slug()\n";
     }
 
-
     void Slug::draw(sf::RenderTarget &target, sf::RenderStates states) const {
         target.draw(mSlugShape, states);
         states.transform = sf::Transform().translate(mSlugShape.outerShape.getPosition() + sf::Vector2f(getRadius()*1.75, -getRadius()));
@@ -79,7 +78,7 @@ namespace slug {
 
     void Slug::initBrain() {
         // randomize weights
-        mBrain.randomizeWeights();
+        // mBrain.randomizeWeights();
 
         // test run
         std::vector<float> results = mBrain.run();

@@ -40,6 +40,7 @@ namespace slug {
     class Connection {
         public:
             Connection(NNNode &in, NNNode &out);
+            void printInfo();
             NNNode *input;
             NNNode *output;
             float weight;
@@ -52,6 +53,7 @@ namespace slug {
     };
 
     class NeuralNetwork {
+        // friend class NeuralNetwork;
         public:
             NeuralNetwork();
             NeuralNetwork(const NeuralNetwork& other);
@@ -67,6 +69,7 @@ namespace slug {
             void addNodeOnRandomConnection();
             void createNewRandomConnection();
             void mutate();
+            NeuralNetwork mate(NeuralNetwork &other) const;
 
             std::vector<float> run();
 

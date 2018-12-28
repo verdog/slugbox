@@ -22,14 +22,15 @@ namespace slug {
     {
         weight = 1.0f;
         enabled = true;
+    }
 
-        // std::cout 
-        //     << "Connection(): "
-        //     << input->nodeID << " -> " << output->nodeID << ", "
-        //     << "weight: " << weight << ", "
-        //     << "enabled: " << enabled << ", "
-        //     << "innovNum: " << innovNum << "\n"
-        // ;
+    void Connection::printInfo() {
+        std::cout 
+            << "innovNum: " << innovNum << ", "
+            << input->nodeID << " -> " << output->nodeID << ", "
+            << "weight: " << weight << ", "
+            << "enabled: " << enabled << "\n"
+        ;
     }
 
     bool Connection::operator==(const Connection &b) {
@@ -44,12 +45,10 @@ namespace slug {
     : nodeID {nextNodeID++}
     , seen {false}
     , mValue {0.0f}
-    {
-
-    }
+    {}
 
     NNNode::~NNNode() {
-
+        std::cout << "~NNNode()\n";
     }
 
     float NNNode::getValue() {
@@ -94,6 +93,7 @@ namespace slug {
     }
 
     NeuralNetwork::NeuralNetwork(const NeuralNetwork& other) {
+        std::cout << "NeuralNetwork::NeuralNetwork(const NeuralNetwork& other)\n";
         std::map<unsigned int, NNNode*> newNodeMap; // for reconstructing connections
 
         // make clones of input nodes
@@ -149,6 +149,8 @@ namespace slug {
 
                 // at this point the connections in the copy still point to the old object.
                 // let's fix that
+                // std::cout << "cloning connection... ";
+                // copy->printInfo();
                 copy->input = newNodeMap.at(copy->input->nodeID);
                 copy->output = newNodeMap.at(copy->output->nodeID);
 
@@ -232,6 +234,130 @@ namespace slug {
         std::cout << "\n";
 
         std::cout << "mutate() done.\n";
+    }
+
+    NeuralNetwork NeuralNetwork::mate(NeuralNetwork &other) const {
+        std::cout << "Combining two brains to make a new one...\n";
+
+        NeuralNetwork newBrain;
+        std::map<unsigned int, NNNode*> newNodes;
+
+        // merge connections
+        std::cout << "connections of first:\n";
+        for (auto &c : mConnections) {
+            c->printInfo();
+        }
+
+        std::cout << "connections of second:\n";
+        for (auto &c : other.mConnections) {
+            c->printInfo();
+        }
+
+        auto firstIt = mConnections.begin();
+        auto otherIt = other.mConnections.begin();
+
+        while (firstIt != mConnections.end() && otherIt != other.mConnections.end()) {
+            if ((*firstIt)->innovNum == (*otherIt)->innovNum) {
+                std::cout << "both innovNums match. (" << (*firstIt)->innovNum << ")\n";
+                
+                // same innov num, choose random
+                if (math::randi(1, 100) <= 50) {
+                    // chose first
+                    newBrain.mConnections.push_back(std::unique_ptr<Connection>(new Connection(**firstIt)));
+                } else {
+                    // chose other
+                    newBrain.mConnections.push_back(std::unique_ptr<Connection>(new Connection(**otherIt)));
+                }
+
+                // move on
+                firstIt++;
+                otherIt++;
+            } else { 
+                // process the pointer w/ the smallest innovnum
+                auto& smallIt = firstIt;
+                if ((*firstIt)->innovNum > (*otherIt)->innovNum) {
+                    smallIt = otherIt;
+                }
+
+                // TODO: only inherit if parent has higher fitness
+
+                std::cout << "innovNums don't match. processing innovNum " << (*smallIt)->innovNum << ".\n";
+
+                newBrain.mConnections.push_back(std::unique_ptr<Connection>(new Connection(**smallIt)));
+
+                smallIt++;
+            }
+        }
+
+        // finish up the one that isn't at the end yet
+        while (firstIt != mConnections.end()) {
+            std::cout << "finishing up. processing innovNum " << (*firstIt)->innovNum << ".\n";
+            newBrain.mConnections.push_back(std::unique_ptr<Connection>(new Connection(**firstIt)));
+            firstIt++;
+        }
+
+        while (otherIt != other.mConnections.end()) {
+            std::cout << "finishing up. processing innovNum " << (*otherIt)->innovNum << ".\n";
+            newBrain.mConnections.push_back(std::unique_ptr<Connection>(new Connection(**otherIt)));
+            otherIt++;
+        }
+
+        std::cout << "connections of new:\n";
+        for (auto &c : newBrain.mConnections) {
+            c->printInfo();
+        }
+
+        // copy inputs and outputs
+        // make clones of input nodes
+        newBrain.mInputNodes.clear(); // get rid of automatically created bias node
+        std::transform(
+            mInputNodes.begin(),
+            mInputNodes.end(),
+            std::back_inserter(newBrain.mInputNodes),
+            [&newNodes](const std::unique_ptr<NNInputNode>&n) {
+                auto copy = std::unique_ptr<NNInputNode>(new NNInputNode(n->mInputFunc));
+                *copy = *n;
+                // save id in newNodes for later use in reconnecting connections
+                newNodes.insert(std::pair<unsigned int, NNNode*>(copy->nodeID, copy.get()));
+                return copy;
+            }
+        );
+
+        // make clones of output nodes
+        std::transform(
+            mOutputNodes.begin(),
+            mOutputNodes.end(),
+            std::back_inserter(newBrain.mOutputNodes),
+            [&newNodes](const std::unique_ptr<NNNode> &n) {
+                auto copy = std::unique_ptr<NNNode>(new NNNode());
+                *copy = *n;
+                // save id in newNodes for later use in reconnecting connections
+                newNodes.insert(std::pair<unsigned int, NNNode*>(copy->nodeID, copy.get()));
+                return copy;
+            }
+        );
+
+        // scan connections and create hidden layers' structure
+        for (const auto &c : newBrain.mConnections) {
+            // if the connection's input/output hasn't been created, create it now
+            if (newNodes.count(c->input->nodeID) == 0) {
+                newBrain.mHiddenNodes.push_back(std::unique_ptr<NNNode>(new NNNode(*c->input)));
+                newNodes.insert({c->input->nodeID, newBrain.mHiddenNodes.back().get()});
+            }
+
+            if (newNodes.count(c->output->nodeID) == 0) {
+                newBrain.mHiddenNodes.push_back(std::unique_ptr<NNNode>(new NNNode(*c->output)));
+                newNodes.insert({c->output->nodeID, newBrain.mHiddenNodes.back().get()});
+            }
+
+            // at this point the connection points back into the parent nodes
+            // let's fix that by adjusting the pointers to point to nodes in our map
+            c->input = newNodes.at(c->input->nodeID);
+            c->output = newNodes.at(c->output->nodeID);
+        }
+
+        // done
+        return newBrain;
     }
 
     void NeuralNetwork::fullyConnect() {

@@ -34,15 +34,29 @@ namespace slug {
 
         mDefaultBrain.fullyConnect();
 
-        mDefaultBrain.addNodeOnRandomConnection();
-        mDefaultBrain.addNodeOnRandomConnection();
-        mDefaultBrain.addNodeOnRandomConnection();
+        auto newSlug1 = std::unique_ptr<slug::Slug>(new Slug(mDefaultBrain));
+        auto newSlug2 = std::unique_ptr<slug::Slug>(new Slug(mDefaultBrain));
 
-        auto newSlug = std::unique_ptr<slug::Slug>(new Slug(mDefaultBrain));
+        newSlug1->getBrain().addNodeOnRandomConnection();
+        // newSlug1->getBrain().addNodeOnRandomConnection();
+        // newSlug1->getBrain().addNodeOnRandomConnection();
 
-        newSlug->setPosition(sf::Vector2f(128, 128));
+        newSlug2->getBrain().addNodeOnRandomConnection();
+        // newSlug2->getBrain().addNodeOnRandomConnection();
+        // newSlug2->getBrain().addNodeOnRandomConnection();
 
-        mEntities.push_back(std::move(newSlug));
+        newSlug1->getBrain().randomizeWeights();
+        newSlug2->getBrain().randomizeWeights();
+
+        newSlug1->setPosition({128, 128});
+        newSlug2->setPosition({512, 128});
+
+        auto newSlug3 = std::unique_ptr<Slug>(new Slug(newSlug1->getBrain().mate(newSlug2->getBrain())));
+        newSlug3->setPosition({320, 320});
+
+        mEntities.push_back(std::move(newSlug1));
+        mEntities.push_back(std::move(newSlug2));
+        mEntities.push_back(std::move(newSlug3));
     }
 
     void Box::handleInput() {

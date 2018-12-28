@@ -16,6 +16,15 @@ namespace slug {
         }
     }
 
+    DrawableNeuralNet::DrawableNeuralNet(const NeuralNetwork &other) 
+    : NeuralNetwork(other)
+    {
+        std::cout << "dNNet()\n";
+        if (!mFont.loadFromFile("./resources/fonts/NotoMono-Regular.ttf")) {
+            std::cerr << "DrawableNeuralNet failed to load font!\n";
+        }
+    }
+
     DrawableNeuralNet::~DrawableNeuralNet() {
         std::cout << "~dNNet()\n";
     }
