@@ -73,6 +73,8 @@ namespace slug {
 
             std::vector<float> run();
 
+            float fitness;
+
         protected:
             std::vector<std::unique_ptr<NNInputNode>> mInputNodes;
             std::vector<std::unique_ptr<NNNode>> mHiddenNodes;

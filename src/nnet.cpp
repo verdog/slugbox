@@ -87,9 +87,8 @@ namespace slug {
 
     NeuralNetwork::NeuralNetwork() 
     : mDirty {true}
+    , fitness {0}
     {
-        // create bias node
-        createInput([](){return 1.0;});
     }
 
     NeuralNetwork::NeuralNetwork(const NeuralNetwork& other) {
@@ -309,7 +308,6 @@ namespace slug {
 
         // copy inputs and outputs
         // make clones of input nodes
-        newBrain.mInputNodes.clear(); // get rid of automatically created bias node
         std::transform(
             mInputNodes.begin(),
             mInputNodes.end(),

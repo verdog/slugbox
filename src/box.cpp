@@ -41,7 +41,7 @@ namespace slug {
         // newSlug1->getBrain().addNodeOnRandomConnection();
         // newSlug1->getBrain().addNodeOnRandomConnection();
 
-        newSlug2->getBrain().addNodeOnRandomConnection();
+        // newSlug2->getBrain().addNodeOnRandomConnection();
         // newSlug2->getBrain().addNodeOnRandomConnection();
         // newSlug2->getBrain().addNodeOnRandomConnection();
 

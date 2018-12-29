@@ -77,9 +77,6 @@ namespace slug {
     }
 
     void Slug::initBrain() {
-        // randomize weights
-        // mBrain.randomizeWeights();
-
         // test run
         std::vector<float> results = mBrain.run();
         for (auto f : results) {
